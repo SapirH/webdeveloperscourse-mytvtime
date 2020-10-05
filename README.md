@@ -1,5 +1,5 @@
 Entities in the app:  
-*[] User  
-*[] Comment  
-*[] Movie
-*[] WatchList  
+*[ ] User  
+*[ ] Comment  
+*[ ] Movie
+*[ ] WatchList  
