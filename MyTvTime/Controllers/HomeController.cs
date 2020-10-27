@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MyTvTime.Models;
+using System.Text;
+using System.Web;
+using System.Security.Cryptography;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MyTvTime.Controllers
 {
@@ -17,7 +22,7 @@ namespace MyTvTime.Controllers
 		{
 			_logger = logger;
 		}
-
+        [Authorize]
 		public IActionResult Index()
 		{
 			return View();

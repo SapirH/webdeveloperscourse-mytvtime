@@ -1,24 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\itayg\\Desktop\\study\\basic web development\\MyTvTime\\MyTvTime\\MyTvTime.csproj": {}
+    "C:\\Users\\Sapir\\Desktop\\Workspace\\myTVtime\\MyTvTime\\MyTvTime.csproj": {}
   },
   "projects": {
-    "C:\\Users\\itayg\\Desktop\\study\\basic web development\\MyTvTime\\MyTvTime\\MyTvTime.csproj": {
+    "C:\\Users\\Sapir\\Desktop\\Workspace\\myTVtime\\MyTvTime\\MyTvTime.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\itayg\\Desktop\\study\\basic web development\\MyTvTime\\MyTvTime\\MyTvTime.csproj",
+        "projectUniqueName": "C:\\Users\\Sapir\\Desktop\\Workspace\\myTVtime\\MyTvTime\\MyTvTime.csproj",
         "projectName": "MyTvTime",
-        "projectPath": "C:\\Users\\itayg\\Desktop\\study\\basic web development\\MyTvTime\\MyTvTime\\MyTvTime.csproj",
-        "packagesPath": "C:\\Users\\itayg\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\itayg\\Desktop\\study\\basic web development\\MyTvTime\\MyTvTime\\obj\\",
+        "projectPath": "C:\\Users\\Sapir\\Desktop\\Workspace\\myTVtime\\MyTvTime\\MyTvTime.csproj",
+        "packagesPath": "C:\\Users\\Sapir\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Sapir\\Desktop\\Workspace\\myTVtime\\MyTvTime\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+          "C:\\Microsoft\\Xamarin\\NuGet\\"
         ],
         "configFilePaths": [
-          "C:\\Users\\itayg\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\Sapir\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.1"
@@ -41,23 +42,31 @@
       "frameworks": {
         "netcoreapp3.1": {
           "dependencies": {
+            "Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation": {
+              "target": "Package",
+              "version": "[3.1.9, )"
+            },
             "Microsoft.EntityFrameworkCore.SqlServer": {
               "target": "Package",
-              "version": "[3.1.8, )"
+              "version": "[3.1.9, )"
             },
             "Microsoft.EntityFrameworkCore.Sqlite": {
               "target": "Package",
-              "version": "[3.1.8, )"
+              "version": "[3.1.9, )"
             },
             "Microsoft.EntityFrameworkCore.Tools": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[3.1.8, )"
+              "version": "[3.1.9, )"
             },
             "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
               "target": "Package",
               "version": "[3.1.4, )"
+            },
+            "RestSharp": {
+              "target": "Package",
+              "version": "[106.11.7, )"
             }
           },
           "imports": [
@@ -78,7 +87,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.402\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.403\\RuntimeIdentifierGraph.json"
         }
       }
     }

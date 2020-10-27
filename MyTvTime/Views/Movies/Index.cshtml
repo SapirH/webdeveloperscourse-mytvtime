@@ -1,0 +1,154 @@
+﻿@model IEnumerable<MyTvTime.Models.Movie>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<form asp-controller="Movies" asp-action="Index" method="get">
+    <p>
+        Title: <input type="text" name="title">
+        <input type="submit" value="Filter" />
+    </p>
+</form>
+
+
+@if (!Model.Any())
+{
+    <script type="text/javascript">
+        //var search = window.location.search;
+        //if (search != "")
+        //{
+        //    //First request
+        //    var settings = {
+        //        "async": true,
+        //        "crossDomain": true,
+        //        "url": "https://movies-tvshows-data-imdb.p.rapidapi.com/" + search + "&type=get-movies-by-title",
+        //        "method": "GET",
+        //        "headers": {
+        //            "x-rapidapi-host": "movies-tvshows-data-imdb.p.rapidapi.com",
+        //            "x-rapidapi-key": "93f2bbe6bdmsh4a12d4d9e5b771dp14b702jsn8bc0f393b0ca"
+        //        }
+        //    }
+
+
+        //    //First callback
+        //    $.ajax(settings).done(function (response) {
+        //        var res = [];
+        //        for (var i = 0; i < 4; i++)
+        //            res.push(response.movie_results[i].imdb_id);
+
+        //        var movies = []
+
+        //        //Second request
+        //        var moviesPromises = res.map((movie) => {
+        //            var settings = {
+        //                "async": true,
+        //                "crossDomain": true,
+        //                "url": "https://movies-tvshows-data-imdb.p.rapidapi.com/?imdb=" + movie + "&type=get-movie-details",
+        //                "method": "GET",
+        //                "headers": {
+        //                    "x-rapidapi-host": "movies-tvshows-data-imdb.p.rapidapi.com",
+        //                    "x-rapidapi-key": "93f2bbe6bdmsh4a12d4d9e5b771dp14b702jsn8bc0f393b0ca"
+        //                }
+        //            }
+
+        //            //Second callback
+        //             return $.ajax(settings);
+        //        })
+
+        //        Promise.all(moviesPromises).then((values) => {
+
+        //            var movie = {
+        //                IMDBID: values[0].imdb_id,
+        //                Name: values[0].title,
+        //                Genres: values[0].Genres[0],
+        //                ReleaseDate: values[0].release_date,
+        //                Language: values[0].language[0] ,
+        //                Runtime: values[0].runtime,
+        //                Description: values[0].description,
+        //                ImageURL: values[0].title
+        //            }
+
+        //            alert(movie.Genres);
+
+        //            $.ajax({
+        //                url: "/Movies/CreateIMDB",
+        //                type: "POST",
+        //                data: { 
+        //                    jsonData: JSON.stringify(movie)
+        //                }
+        //            }).done(function () { console.log('ok'); });
+
+        //            console.log(values);
+        //        })
+
+        //        console.log(response);
+        //    });
+        //}
+    </script>
+
+}
+
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ReleaseDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Language)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Runtime)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Description)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ImageURL)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ReleaseDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Language)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Runtime)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Description)
+                    </td>
+                    <td>
+                        <img src="@item.ImageURL" width="100" />
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
