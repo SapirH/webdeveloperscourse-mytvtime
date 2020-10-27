@@ -7,13 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using System;
 using Microsoft.EntityFrameworkCore;
 using MyTvTime.Models;
-using MyTvTime.Data;
 
 namespace MyTvTime
 {
@@ -29,8 +25,8 @@ namespace MyTvTime
 
                 try
                 {
-                    var context = services.GetRequiredService<UserContext>();
-                    context.Database.Migrate();
+                    //var context = services.GetRequiredService<UserContext>();
+                    //context.Database.Migrate();
                     SeedData.Initialize(services);
                 }
                 catch (Exception ex)
