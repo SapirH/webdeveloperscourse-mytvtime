@@ -26,7 +26,7 @@
 
 <div class="container-login100">
     <div class="wrap-login100 p-t-90 p-b-30">
-        <form asp-controller="Users" asp-action="Login" class="login100-form validate-form">
+        <form asp-controller="Auth" asp-action="Login" class="login100-form validate-form">
             <span class="login100-form-title p-b-40">
                 Login
             </span>
@@ -65,7 +65,7 @@
                     Don’t have an account?
                 </span>
 
-                <a asp-controller="Users" asp-action="Create" class="bo1 hov1">
+                <a asp-controller="Auth" asp-action="Create" class="bo1 hov1">
                     Sign up now
                 </a>
             </div>
@@ -74,7 +74,7 @@
                     Forgot password?
                 </span>
 
-                <a asp-controller="Users" asp-action="ResetPassword" class="bo1 hov1">
+                <a asp-controller="Auth" asp-action="ResetPassword" class="bo1 hov1">
                     Reset password now
                 </a>
             </div>

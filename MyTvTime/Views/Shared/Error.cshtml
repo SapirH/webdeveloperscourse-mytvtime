@@ -12,6 +12,19 @@
         <strong>Request ID:</strong> <code>@Model.RequestId</code>
     </p>
 }
+@if (Model.ShowStatusCode)
+{
+    <p>
+        <strong>Status Code</strong> <code>@Model.StatusCode</code>
+    </p>
+}
+
+@if (Model.ShowAdditionalInfo)
+{
+    <p>
+        <code>@Model.AdditionalInfo</code>
+    </p>
+}
 
 <h3>Development Mode</h3>
 <p>

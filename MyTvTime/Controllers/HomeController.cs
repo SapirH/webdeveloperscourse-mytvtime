@@ -33,10 +33,37 @@ namespace MyTvTime.Controllers
 			return View();
 		}
 
-		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-		public IActionResult Error()
-		{
-			return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-		}
-	}
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error(int? statusCode = null)
+        {
+            var error = new ErrorViewModel
+            {
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier,
+                StatusCode = statusCode.HasValue ? statusCode.ToString() : null
+            };
+
+            if (statusCode.HasValue)
+            {
+                if (statusCode == 400)
+                {
+                    error.AdditionalInfo = "Bad request.";
+                }
+                else if (statusCode == 404)
+                {
+                    error.AdditionalInfo = "Page not found or Resource not found.";
+                }
+                else if (statusCode == 500)
+                {
+                    error.AdditionalInfo = "Server error, something went wrong.";
+                }
+                else
+                {
+                    error.AdditionalInfo = "Unknown error.";
+                }
+            }
+
+            return View(error);
+        }
+    }
 }
