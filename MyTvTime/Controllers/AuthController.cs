@@ -66,9 +66,9 @@ namespace MyTvTime.Controllers
 
 
         //Logout
-        public ActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
-            //HttpContext.Session.Abandon();
+            await HttpContext.SignOutAsync();
             return RedirectToAction("Login");
         }
 
