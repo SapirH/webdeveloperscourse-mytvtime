@@ -38,8 +38,9 @@ namespace MyTvTime
 			
 			services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options => 
 			{
-				options.LoginPath = "/Users/Login";
-				options.LogoutPath = "/LogOff";
+				options.LoginPath = "/Auth/Login";
+				options.LogoutPath = "/Auth/Logout";
+				options.AccessDeniedPath = "/Auth/AccessDenied";
 			});
 
             services.AddRazorPages(options =>
