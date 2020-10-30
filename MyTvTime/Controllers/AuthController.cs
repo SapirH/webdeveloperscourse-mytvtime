@@ -17,9 +17,9 @@ namespace MyTvTime.Controllers
 {
     public class AuthController : Controller
     {
-        private readonly UserContext _context;
+        private readonly TVContext _context;
 
-        public AuthController(UserContext context)
+        public AuthController(TVContext context)
         {
             _context = context;
         }

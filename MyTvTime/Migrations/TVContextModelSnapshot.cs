@@ -8,8 +8,8 @@ using MyTvTime.Data;
 
 namespace MyTvTime.Migrations
 {
-    [DbContext(typeof(UserContext))]
-    partial class UserContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(TVContext))]
+    partial class TVContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {

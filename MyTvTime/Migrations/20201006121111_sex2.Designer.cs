@@ -9,7 +9,7 @@ using MyTvTime.Data;
 
 namespace MyTvTime.Migrations
 {
-    [DbContext(typeof(UserContext))]
+    [DbContext(typeof(TVContext))]
     [Migration("20201006121111_sex2")]
     partial class sex2
     {

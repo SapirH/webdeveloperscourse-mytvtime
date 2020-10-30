@@ -32,7 +32,7 @@ namespace MyTvTime
 		{
 			services.AddControllersWithViews();
 
-			services.AddDbContext<UserContext>(options => options.UseSqlServer(Configuration.GetConnectionString("UserContext")));
+			services.AddDbContext<TVContext>(options => options.UseSqlServer(Configuration.GetConnectionString("TVContext")));
 
 			services.AddSession(options => options.IdleTimeout = TimeSpan.FromMinutes(1));
 			
