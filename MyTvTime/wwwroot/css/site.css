@@ -69,3 +69,38 @@ body {
   white-space: nowrap;
   line-height: 60px; /* Vertically center the text there */
 }
+
+.cover-section {
+    text-align: center;
+}
+
+.cover-photo {
+    width: 60%;
+    height: 400px;
+    border-radius: 3em;
+}
+
+.aside-container {
+    display: flex;
+}
+
+.aside-section {
+    padding: 3em;
+    display: flex;
+    justify-content: space-around;
+}
+
+
+.link {
+    color: #cc0009;
+    text-shadow: 1px 3px 4px black;
+    font-size: 2.5em;
+    font-weight: 700;
+    line-height: 1.5;
+    transition: color 0.5s;
+}
+
+    .link:hover {
+        color: #fc1f20;
+        text-decoration: unset;
+    }

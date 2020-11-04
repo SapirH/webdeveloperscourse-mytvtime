@@ -1,8 +1,34 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
-
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="cover-section">
+    <canvas id="mainCanvas" class="cover-photo" width="500" height="250"></canvas>
+    <h3>I want to...</h3>
 </div>
+<section class="aside-section">
+    <aside class="aside-container">
+        <a asp-controller="Movies" asp-action="Index" class="link">View All Movies</a>
+    </aside>
+    <aside class="aside-container">
+        <a asp-controller="Movies" asp-action="ShowWishList" class="link">Watch My WishList</a>
+    </aside>
+    <aside class="aside-container">
+        <a asp-controller="Users" asp-action="Index" class="link">Manage Users</a>
+    </aside>
+</section>
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script type="text/javascript">
+    var canvas = $('#mainCanvas')[0];
+    var ctx = canvas.getContext('2d');
+
+    function insertImage() {
+        image = new Image();
+        image.src = 'images/MovieTime.png';
+        image.onload = function () {
+            ctx.drawImage(image, 0, 0, 504, 250);
+        }
+    }
+
+    insertImage();
+</script>
