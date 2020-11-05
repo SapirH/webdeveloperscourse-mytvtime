@@ -23,21 +23,29 @@ namespace MyTvTime.Controllers
         }
 
         // GET: Movies
-        public async Task<IActionResult> Index(string title)
+        public async Task<IActionResult> Index(string title, string language, int releaseYear, string genre)
         {
-            var movies = from m in db.Movie select m;
+            var movies = db.Movie.AsQueryable();
 
-            if (!string.IsNullOrEmpty(title))
+            if (string.IsNullOrEmpty(title) && string.IsNullOrEmpty(language) && releaseYear == 0 && string.IsNullOrEmpty(genre))
             {
-                movies = movies.Where(s => s.Name.Contains(title));
-                List<Movie> res = await movies.ToListAsync();
-                if (!res.Any())
-                    await AddFromIMDBAsync(title);
-
-                return View(res);
+                return View(await movies.ToListAsync());
             }
 
-            return View(await movies.ToListAsync());
+            if (!String.IsNullOrWhiteSpace(title))
+                movies = movies.Where(x => x.Name.StartsWith(title));
+            if (!String.IsNullOrWhiteSpace(language))
+                movies = movies.Where(x => x.Language.Contains(language));
+            //if (!String.IsNullOrWhiteSpace(genre))
+            //    movies = movies.Where(x => x.Genres.Contains(genre));
+            if (releaseYear > 0)
+                movies = movies.Where(x => x.ReleaseDate.Year.Equals(releaseYear));
+
+            List<Movie> res = await movies.ToListAsync();
+            if (!res.Any())
+                await AddFromIMDBAsync(title);
+
+            return View(res);
         }
 
         private async Task AddFromIMDBAsync(string search)

@@ -100,7 +100,28 @@ body {
     transition: color 0.5s;
 }
 
-    .link:hover {
-        color: #fc1f20;
-        text-decoration: unset;
-    }
+.link:hover {
+    color: #fc1f20;
+    text-decoration: unset;
+}
+
+.movie-function {
+    width: 82px;
+}
+.search-section {
+    display: flex;
+    height: 34px;
+    margin-bottom: 20px;
+}
+
+.search-field {
+    display: flex;
+    width: 286px;
+    margin: 0px 7px;
+}
+
+label {
+    display: inline-block;
+    margin-bottom: .5rem;
+    margin-right: 6px;
+}
