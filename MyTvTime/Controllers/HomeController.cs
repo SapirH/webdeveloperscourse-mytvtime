@@ -36,8 +36,6 @@ namespace MyTvTime.Controllers
         [AllowAnonymous]
         public IActionResult About()
         {
-            ViewData["Message"] = "Who we are:";
-
             return View();
         }
 

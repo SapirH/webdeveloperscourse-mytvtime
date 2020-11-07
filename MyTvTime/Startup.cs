@@ -34,7 +34,7 @@ namespace MyTvTime
 
 			services.AddDbContext<UserContext>(options => options.UseSqlServer(Configuration.GetConnectionString("UserContext")));
 
-			services.AddSession(options => options.IdleTimeout = TimeSpan.FromMinutes(30));
+			services.AddSession(options => options.IdleTimeout = TimeSpan.FromHours(3));
 
 			services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options => 
 			{

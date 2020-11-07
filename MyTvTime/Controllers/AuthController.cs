@@ -120,10 +120,14 @@ namespace MyTvTime.Controllers
         {
             if (ModelState.IsValid)
             {
+                if(user.username == "admin")
+                {
+                    user.isAdmin = true;
+                }
                 _context.Add(user);
                 await _context.SaveChangesAsync();
                 await _SignInAsync(user);
-                return RedirectToAction(nameof(Index));
+                RedirectToAction(nameof(HomeController.Index), "Home");
             }
             return View(user);
         }
@@ -153,7 +157,7 @@ namespace MyTvTime.Controllers
             var claimIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var authProperties = new AuthenticationProperties
             {
-                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(1)
+                ExpiresUtc = DateTimeOffset.UtcNow.AddHours(1)
             };
             await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,

@@ -26,7 +26,10 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Movies" asp-action="ShowWishList">MyWishList</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Edit">My Account</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Details">My Account</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Statistics" asp-action="Index">Statistics</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="About">About Us</a>
@@ -39,6 +42,11 @@
                         </li>
                     </ul>
                 </div>
+                @*@if (HttpContext.User.IsAuthenticated) {
+                    <div>
+                        Hello <%=HttpContext.User.username>
+                    </div>
+                  }*@
             </div>
         </nav>
 
