@@ -2,6 +2,29 @@
 
 @{
     ViewData["Title"] = "Index";
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            var languages = $('#language');
+            var genres = $('#genre');
+            var languageSettings = {
+                "async": true,
+                "crossDomain": true,
+                "url": "https://wft-geo-db.p.rapidapi.com/v1/locale/languages?limit=10",
+                "method": "GET",
+                "headers": {
+                    "x-rapidapi-host": "wft-geo-db.p.rapidapi.com",
+                    "x-rapidapi-key": "58193b92e9msh4940fad70ac6d4fp1bfe08jsn592fbe2245b9"
+                }
+            }
+            $.ajax(languageSettings).done(function (response) {
+                languages.empty().append($('<option></option>').val('').text('Please select'));
+                $.each(response.data, function (index, item) {
+                    languages.append($(`<option></option>`).val(item.name).text(item.name));
+                });
+            });
+        });
+    </script>
 }
 
 <h1>Index</h1>
@@ -10,86 +33,101 @@
     <a asp-action="Create">Create New</a>
 </p>
 <form asp-controller="Movies" asp-action="Index" method="get">
-    <p>
-        Title: <input type="text" name="title">
+    <div class="search-section">
+        <div class="search-field">
+            <label class="control-label">Title: </label>
+            <input type="text" name="title">
+        </div>
+        <div class="search-field">
+            <label class="control-label">Language: </label>
+            <select id="language" name="language" class="form-control"></select>
+        </div>
+        <div class="search-field">
+            <label class="control-label">Release Year: </label>
+            <input type="number" name="ReleaseYear">
+        </div>
+        <div class="search-field">
+            <label class="control-label">Genre: </label>
+            <input type="text" name="genre">
+        </div>
         <input type="submit" value="Filter" />
-    </p>
+</div>
 </form>
 
 
 @if (!Model.Any())
 {
     <script type="text/javascript">
-        //var search = window.location.search;
-        //if (search != "")
-        //{
-        //    //First request
-        //    var settings = {
-        //        "async": true,
-        //        "crossDomain": true,
-        //        "url": "https://movies-tvshows-data-imdb.p.rapidapi.com/" + search + "&type=get-movies-by-title",
-        //        "method": "GET",
-        //        "headers": {
-        //            "x-rapidapi-host": "movies-tvshows-data-imdb.p.rapidapi.com",
-        //            "x-rapidapi-key": "93f2bbe6bdmsh4a12d4d9e5b771dp14b702jsn8bc0f393b0ca"
-        //        }
-        //    }
+            //var search = window.location.search;
+            //if (search != "")
+            //{
+            //    //First request
+            //    var settings = {
+            //        "async": true,
+            //        "crossDomain": true,
+            //        "url": "https://movies-tvshows-data-imdb.p.rapidapi.com/" + search + "&type=get-movies-by-title",
+            //        "method": "GET",
+            //        "headers": {
+            //            "x-rapidapi-host": "movies-tvshows-data-imdb.p.rapidapi.com",
+            //            "x-rapidapi-key": "93f2bbe6bdmsh4a12d4d9e5b771dp14b702jsn8bc0f393b0ca"
+            //        }
+            //    }
 
 
-        //    //First callback
-        //    $.ajax(settings).done(function (response) {
-        //        var res = [];
-        //        for (var i = 0; i < 4; i++)
-        //            res.push(response.movie_results[i].imdb_id);
+            //    //First callback
+            //    $.ajax(settings).done(function (response) {
+            //        var res = [];
+            //        for (var i = 0; i < 4; i++)
+            //            res.push(response.movie_results[i].imdb_id);
 
-        //        var movies = []
+            //        var movies = []
 
-        //        //Second request
-        //        var moviesPromises = res.map((movie) => {
-        //            var settings = {
-        //                "async": true,
-        //                "crossDomain": true,
-        //                "url": "https://movies-tvshows-data-imdb.p.rapidapi.com/?imdb=" + movie + "&type=get-movie-details",
-        //                "method": "GET",
-        //                "headers": {
-        //                    "x-rapidapi-host": "movies-tvshows-data-imdb.p.rapidapi.com",
-        //                    "x-rapidapi-key": "93f2bbe6bdmsh4a12d4d9e5b771dp14b702jsn8bc0f393b0ca"
-        //                }
-        //            }
+            //        //Second request
+            //        var moviesPromises = res.map((movie) => {
+            //            var settings = {
+            //                "async": true,
+            //                "crossDomain": true,
+            //                "url": "https://movies-tvshows-data-imdb.p.rapidapi.com/?imdb=" + movie + "&type=get-movie-details",
+            //                "method": "GET",
+            //                "headers": {
+            //                    "x-rapidapi-host": "movies-tvshows-data-imdb.p.rapidapi.com",
+            //                    "x-rapidapi-key": "93f2bbe6bdmsh4a12d4d9e5b771dp14b702jsn8bc0f393b0ca"
+            //                }
+            //            }
 
-        //            //Second callback
-        //             return $.ajax(settings);
-        //        })
+            //            //Second callback
+            //             return $.ajax(settings);
+            //        })
 
-        //        Promise.all(moviesPromises).then((values) => {
+            //        Promise.all(moviesPromises).then((values) => {
 
-        //            var movie = {
-        //                IMDBID: values[0].imdb_id,
-        //                Name: values[0].title,
-        //                Genres: values[0].Genres[0],
-        //                ReleaseDate: values[0].release_date,
-        //                Language: values[0].language[0] ,
-        //                Runtime: values[0].runtime,
-        //                Description: values[0].description,
-        //                ImageURL: values[0].title
-        //            }
+            //            var movie = {
+            //                IMDBID: values[0].imdb_id,
+            //                Name: values[0].title,
+            //                Genres: values[0].Genres[0],
+            //                ReleaseDate: values[0].release_date,
+            //                Language: values[0].language[0] ,
+            //                Runtime: values[0].runtime,
+            //                Description: values[0].description,
+            //                ImageURL: values[0].title
+            //            }
 
-        //            alert(movie.Genres);
+            //            alert(movie.Genres);
 
-        //            $.ajax({
-        //                url: "/Movies/CreateIMDB",
-        //                type: "POST",
-        //                data: { 
-        //                    jsonData: JSON.stringify(movie)
-        //                }
-        //            }).done(function () { console.log('ok'); });
+            //            $.ajax({
+            //                url: "/Movies/CreateIMDB",
+            //                type: "POST",
+            //                data: {
+            //                    jsonData: JSON.stringify(movie)
+            //                }
+            //            }).done(function () { console.log('ok'); });
 
-        //            console.log(values);
-        //        })
+            //            console.log(values);
+            //        })
 
-        //        console.log(response);
-        //    });
-        //}
+            //        console.log(response);
+            //    });
+            //}
     </script>
 
 }
@@ -142,7 +180,7 @@ else
                     <td>
                         <img src="@item.ImageURL" width="100" />
                     </td>
-                    <td>
+                    <td class="movie-function">
                         <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
                         <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
                         <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>

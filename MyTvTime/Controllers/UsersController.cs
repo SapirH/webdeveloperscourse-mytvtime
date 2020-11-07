@@ -34,7 +34,15 @@ namespace MyTvTime.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                if (HttpContext.User.Identity.IsAuthenticated)
+                {
+                    var identity = ((ClaimsIdentity)User.Identity).FindFirst(type: "UserId").Value;
+                    id = Int32.Parse(identity);
+                }
+                else
+                {
+                    return NotFound();
+                }
             }
 
             var user = await _context.User
@@ -68,7 +76,7 @@ namespace MyTvTime.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,username,password,email,birthdate")] User user)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,username,password,email,birthdate,country,language,sex, isAdmin")] User user)
         {
             if (id != user.Id)
             {
