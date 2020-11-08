@@ -17,9 +17,9 @@ namespace MyTvTime.Controllers
 {
     public class AuthController : Controller
     {
-        private readonly UserContext _context;
+        private readonly TVContext _context;
 
-        public AuthController(UserContext context)
+        public AuthController(TVContext context)
         {
             _context = context;
         }
@@ -96,7 +96,7 @@ namespace MyTvTime.Controllers
                     _context.Update(user);
                     await _context.SaveChangesAsync();
                     await _SignInAsync(users.First());
-                    return View("~/Views/Movies/Index.cshtml");
+                    return RedirectToAction(nameof(HomeController.Index), "Home");
                 }
                 return NotFound();
             }
@@ -127,7 +127,7 @@ namespace MyTvTime.Controllers
                 _context.Add(user);
                 await _context.SaveChangesAsync();
                 await _SignInAsync(user);
-                RedirectToAction(nameof(HomeController.Index), "Home");
+                return RedirectToAction(nameof(HomeController.Index), "Home");
             }
             return View(user);
         }
@@ -149,9 +149,9 @@ namespace MyTvTime.Controllers
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.username),
+                new Claim(ClaimTypes.Name, user.Id.ToString()),
                 new Claim("Email", user.email),
-                new Claim("UserId", user.Id.ToString()),
+                new Claim("username", user.username),
                 new Claim("isAdmin", user.isAdmin.ToString())
             };
             var claimIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

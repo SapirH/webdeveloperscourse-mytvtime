@@ -36,5 +36,7 @@ namespace MyTvTime.Models
 		[Required(ErrorMessage = "You have to choose your language")]
 		public string language { get; set; }
 		public bool isAdmin { get; set; }
+
+		public ICollection<Comment> Comments { get; set; }
 	}
 }

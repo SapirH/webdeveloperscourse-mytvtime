@@ -25,7 +25,7 @@ namespace MyTvTime
 
                 try
                 {
-                    //var context = services.GetRequiredService<UserContext>();
+                    //var context = services.GetRequiredService<TVContext>();
                     //context.Database.Migrate();
                     SeedData.Initialize(services);
                 }

@@ -29,5 +29,7 @@ namespace MyTvTime.Models
 
         [DisplayName("Poster")]
         public string ImageURL { get; set; }
+
+        public ICollection<Comment> Comments { get; set; }
     }
 }

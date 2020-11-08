@@ -8,9 +8,9 @@ using MyTvTime.Models;
 
 namespace MyTvTime.Data
 {
-    public class UserContext : DbContext
+    public class TVContext : DbContext
     {
-        public UserContext (DbContextOptions<UserContext> options)
+        public TVContext (DbContextOptions<TVContext> options)
             : base(options)
         {
         }
@@ -27,5 +27,7 @@ namespace MyTvTime.Data
         public DbSet<Genre> Genre { get; set; }
 
         public DbSet<MovieGenres> MovieGenres { get; set; }
+
+        public DbSet<Comment> Comment { get; set; }
     }
 }
