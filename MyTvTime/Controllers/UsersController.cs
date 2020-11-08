@@ -26,7 +26,8 @@ namespace MyTvTime.Controllers
         // GET: Users
         public async Task<IActionResult> Index()
         {
-            return View(await _context.User.ToListAsync());
+            var users = from u in _context.User select u;
+            return View(await users.ToListAsync());
         }
 
         // GET: Users/Details/5

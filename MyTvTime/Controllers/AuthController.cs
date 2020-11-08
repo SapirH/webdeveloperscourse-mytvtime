@@ -96,7 +96,7 @@ namespace MyTvTime.Controllers
                     _context.Update(user);
                     await _context.SaveChangesAsync();
                     await _SignInAsync(users.First());
-                    return View("~/Views/Movies/Index.cshtml");
+                    return RedirectToAction(nameof(HomeController.Index), "Home");
                 }
                 return NotFound();
             }
@@ -127,7 +127,7 @@ namespace MyTvTime.Controllers
                 _context.Add(user);
                 await _context.SaveChangesAsync();
                 await _SignInAsync(user);
-                RedirectToAction(nameof(HomeController.Index), "Home");
+                return RedirectToAction(nameof(HomeController.Index), "Home");
             }
             return View(user);
         }
