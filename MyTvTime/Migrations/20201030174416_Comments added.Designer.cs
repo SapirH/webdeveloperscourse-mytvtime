@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyTvTime.Data;
 
 namespace MyTvTime.Migrations
 {
     [DbContext(typeof(TVContext))]
-    partial class TVContextModelSnapshot : ModelSnapshot
+    [Migration("20201030174416_Comments added")]
+    partial class Commentsadded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -155,13 +157,13 @@ namespace MyTvTime.Migrations
             modelBuilder.Entity("MyTvTime.Models.Comment", b =>
                 {
                     b.HasOne("MyTvTime.Models.Movie", "Movie")
-                        .WithMany("Comments")
+                        .WithMany()
                         .HasForeignKey("MovieID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("MyTvTime.Models.User", "User")
-                        .WithMany("Comments")
+                        .WithMany()
                         .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

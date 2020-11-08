@@ -27,5 +27,7 @@ namespace MyTvTime.Data
         public DbSet<Genre> Genre { get; set; }
 
         public DbSet<MovieGenres> MovieGenres { get; set; }
+
+        public DbSet<Comment> Comment { get; set; }
     }
 }

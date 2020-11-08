@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyTvTime.Data;
 
 namespace MyTvTime.Migrations
 {
     [DbContext(typeof(TVContext))]
-    partial class TVContextModelSnapshot : ModelSnapshot
+    [Migration("20201101175335_Comments Fully Defined")]
+    partial class CommentsFullyDefined
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
