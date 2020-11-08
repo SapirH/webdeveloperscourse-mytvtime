@@ -16,9 +16,9 @@ namespace MyTvTime.Controllers
 {
     public class StatisticsController : Controller
     {
-        private readonly UserContext db;
+        private readonly TVContext db;
 
-        public StatisticsController(UserContext context)
+        public StatisticsController(TVContext context)
         {
             db = context;
         }

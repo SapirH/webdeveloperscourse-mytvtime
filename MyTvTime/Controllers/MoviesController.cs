@@ -15,9 +15,10 @@ namespace MyTvTime.Controllers
 {
     public class MoviesController : Controller
     {
-        private readonly UserContext db;
+        private readonly TVContext db;
+        private int numMoviesToAdd = 5;
 
-        public MoviesController(UserContext context)
+        public MoviesController(TVContext context)
         {
             db = context;
         }
@@ -33,7 +34,15 @@ namespace MyTvTime.Controllers
             }
 
             if (!String.IsNullOrWhiteSpace(title))
-                movies = movies.Where(x => x.Name.StartsWith(title));
+            {
+                movies = movies.Where(x => x.Name.Contains(title));
+                var moviesRes = await movies.ToListAsync();
+                if (!moviesRes.Any())
+                {
+                    await AddFromIMDBAsync(title);
+                }
+            }
+            
             if (!String.IsNullOrWhiteSpace(language))
                 movies = movies.Where(x => x.Language.Contains(language));
             //if (!String.IsNullOrWhiteSpace(genre))
@@ -42,9 +51,6 @@ namespace MyTvTime.Controllers
                 movies = movies.Where(x => x.ReleaseDate.Year.Equals(releaseYear));
 
             List<Movie> res = await movies.ToListAsync();
-            if (!res.Any())
-                await AddFromIMDBAsync(title);
-
             return View(res);
         }
 
@@ -57,8 +63,8 @@ namespace MyTvTime.Controllers
             var response = await client.ExecuteAsync(request);
 
             MovieResultRoot movieResultRoot = JsonConvert.DeserializeObject<MovieResultRoot>(response.Content);
-
-            for (int i = 0; i < 5; i++)
+            var length = Math.Min(movieResultRoot.search_results, numMoviesToAdd); 
+            for (int i = 0; i < length; i++)
             {
                 if (!db.Movie.Where(m => m.IMDBID == movieResultRoot.movie_results[i].imdb_id).Any())
                     await AddSingleMovieIMDBAsync(movieResultRoot.movie_results[i].imdb_id);
@@ -136,13 +142,15 @@ namespace MyTvTime.Controllers
                 return NotFound();
             }
 
-            var movie = await db.Movie
-                .FirstOrDefaultAsync(m => m.ID == id);
+            var movie = await db.Movie.Where(m => m.ID == id).Include(x => x.Comments).ThenInclude(x => x.User).Include(x => x.Genres).ThenInclude(x => x.Genre)
+                .FirstOrDefaultAsync();
             if (movie == null)
             {
                 return NotFound();
             }
 
+
+            ViewData["UserID"] = HttpContext.User.Identity.IsAuthenticated ? int.Parse(HttpContext.User.Identity.Name) : 0;
             return View(movie);
         }
 
