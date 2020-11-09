@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using MyTvTime.Data;
 using MyTvTime.Models;
+using MyTvTime.Controllers;
 using Newtonsoft.Json;
 using RestSharp;
+using System.Security.Claims;
 
 namespace MyTvTime.Controllers
 {
@@ -27,6 +30,7 @@ namespace MyTvTime.Controllers
         public async Task<IActionResult> Index(string title, string language, int releaseYear, string genre)
         {
             var movies = db.Movie.AsQueryable();
+            ViewData["IsUserAdmin"] = ((ClaimsIdentity)User.Identity).FindFirst(type: "isAdmin").Value;
 
             if (string.IsNullOrEmpty(title) && string.IsNullOrEmpty(language) && releaseYear == 0 && string.IsNullOrEmpty(genre))
             {
@@ -54,6 +58,19 @@ namespace MyTvTime.Controllers
             return View(res);
         }
 
+        public async Task<IActionResult> SearchInIMDB(string title)
+        {
+            ViewData["IsUserAdmin"] = ((ClaimsIdentity)User.Identity).FindFirst(type: "isAdmin").Value;
+            var movies = db.Movie.AsQueryable();
+            if (string.IsNullOrEmpty(title))
+            {
+                return View("Index",await movies.ToListAsync());
+            }
+            await AddFromIMDBAsync(title);
+            movies = movies.Where(x => x.Name.Contains(title));
+            List<Movie> res = await movies.ToListAsync();
+            return View("Index", res);
+        }
         private async Task AddFromIMDBAsync(string search)
         {
             var client = new RestClient("https://rapidapi.p.rapidapi.com/?title=" + search + "&type=get-movies-by-title");
@@ -88,7 +105,7 @@ namespace MyTvTime.Controllers
             because the chances of it being a legit movie are much higher.*/
             DateTime date;
             int run = int.TryParse(md.runtime, out run) ? run : default;
-            if (run <= 80 || md.genres == null)
+            if (run <= 80 || md.genres == null || md.language == null)
                 return;
 
             Movie m = new Movie
@@ -150,7 +167,7 @@ namespace MyTvTime.Controllers
             }
 
 
-            ViewData["UserID"] = HttpContext.User.Identity.IsAuthenticated ? int.Parse(HttpContext.User.Identity.Name) : 0;
+            ViewData["UserID"] = HttpContext.User.Identity.IsAuthenticated ? int.Parse(((ClaimsIdentity)User.Identity).FindFirst(type: "UserId").Value) : 0;
             return View(movie);
         }
 

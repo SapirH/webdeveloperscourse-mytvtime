@@ -3,7 +3,7 @@
 }
 <div class="cover-section">
     <canvas id="mainCanvas" class="cover-photo" width="500" height="250"></canvas>
-    <h3>I want to...</h3>
+    <h3>Hello @ViewData["UserName"]! What do you want to do?</h3>
 </div>
 <section class="aside-section">
     <aside class="aside-container">
@@ -12,13 +12,19 @@
     <aside class="aside-container">
         <a asp-controller="Movies" asp-action="ShowWishList" class="link">Watch My WishList</a>
     </aside>
-    <aside class="aside-container">
-        <a asp-controller="Users" asp-action="Index" class="link">Manage Users</a>
-    </aside>
-    <aside class="aside-container">
-        <a asp-controller="Statistics" asp-action="Index" class="link">See Some Statistics</a>
-    </aside>
-</section>
+    @if (Convert.ToBoolean(ViewData["IsUserAdmin"]))
+    {
+        <aside class="aside-container">
+            <a asp-controller="Users" asp-action="Index" class="link">Manage Users</a>
+        </aside>
+    }    
+    @if (Convert.ToBoolean(ViewData["IsUserAdmin"]))
+    {
+        <aside class="aside-container">
+            <a asp-controller="Statistics" asp-action="Index" class="link">See Some Statistics</a>
+        </aside>
+    }
+    </section>
 
 <script src="~/lib/jquery/dist/jquery.js"></script>
 <script type="text/javascript">
