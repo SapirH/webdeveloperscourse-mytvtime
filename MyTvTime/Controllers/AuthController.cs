@@ -152,7 +152,8 @@ namespace MyTvTime.Controllers
                 new Claim(ClaimTypes.Name, user.Id.ToString()),
                 new Claim("Email", user.email),
                 new Claim("username", user.username),
-                new Claim("isAdmin", user.isAdmin.ToString())
+                new Claim("isAdmin", user.isAdmin.ToString()),
+                new Claim("UserId", user.Id.ToString()),
             };
             var claimIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var authProperties = new AuthenticationProperties

@@ -33,6 +33,8 @@ namespace MyTvTime.Controllers
         // GET: Users/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            ViewData["IsUserAdmin"] = ((ClaimsIdentity)User.Identity).FindFirst(type: "isAdmin").Value;
+            ViewData["UserId"] = ((ClaimsIdentity)User.Identity).FindFirst(type: "UserId").Value;
             if (id == null)
             {
                 if (HttpContext.User.Identity.IsAuthenticated)
@@ -52,7 +54,6 @@ namespace MyTvTime.Controllers
             {
                 return NotFound();
             }
-
             return View(user);
         }
 
@@ -69,6 +70,8 @@ namespace MyTvTime.Controllers
             {
                 return NotFound();
             }
+            ViewData["UserId"] = ((ClaimsIdentity)User.Identity).FindFirst(type: "UserId").Value;
+            ViewData["IsUserAdmin"] = ((ClaimsIdentity)User.Identity).FindFirst(type: "isAdmin").Value;
             return View(user);
         }
 
@@ -79,6 +82,8 @@ namespace MyTvTime.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,username,password,email,birthdate,country,language,sex, isAdmin")] User user)
         {
+            ViewData["IsUserAdmin"] = ((ClaimsIdentity)User.Identity).FindFirst(type: "isAdmin").Value;
+            ViewData["UserId"] = ((ClaimsIdentity)User.Identity).FindFirst(type: "UserId").Value;
             if (id != user.Id)
             {
                 return NotFound();
@@ -102,7 +107,7 @@ namespace MyTvTime.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return View("Details",user);
             }
             return View(user);
         }
@@ -122,7 +127,7 @@ namespace MyTvTime.Controllers
                 return NotFound();
             }
 
-            return View(user);
+            return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
         // POST: Users/Delete/5

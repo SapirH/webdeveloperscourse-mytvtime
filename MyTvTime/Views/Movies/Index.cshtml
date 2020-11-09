@@ -29,14 +29,11 @@
 
 <h1>Index</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <form asp-controller="Movies" asp-action="Index" method="get">
     <div class="search-section">
         <div class="search-field">
             <label class="control-label">Title: </label>
-            <input type="text" name="title">
+            <input type="text" id="title-field" name="title">
         </div>
         <div class="search-field">
             <label class="control-label">Language: </label>
@@ -53,7 +50,6 @@
         <input type="submit" value="Filter" />
 </div>
 </form>
-
 
 @if (!Model.Any())
 {
@@ -181,12 +177,28 @@ else
                         <img src="@item.ImageURL" width="100" />
                     </td>
                     <td class="movie-function">
-                        <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
-                        <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
-                        <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                        @if (Convert.ToBoolean(ViewData["IsUserAdmin"]))
+                        {
+                            <a asp-action="Delete" asp-route-id="@item.ID">Delete |</a>
+                        }
+                        @if(Convert.ToBoolean(ViewData["IsUserAdmin"]))
+                        {
+                            <a asp-action="Edit" asp-route-id="@item.ID">Edit |</a>
+                        }
+                        <a asp-action="Details" asp-route-id="@item.ID">Details</a> 
                     </td>
                 </tr>
             }
         </tbody>
     </table>
 }
+<form asp-controller="Movies" asp-action="SearchInIMDB" method="get" id="SearchInIMDB">
+        <div>
+            <label class="control-label">
+                Dont find what you look for?
+                Try to search on IMDB
+            </label>
+            <input type="text" name="title" placeholder="title">
+        </div>
+        <input type="submit" asp-action="SearchInIMDB" value="IMDB Search" />
+</form>

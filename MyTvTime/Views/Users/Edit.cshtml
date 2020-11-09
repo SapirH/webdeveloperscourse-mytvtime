@@ -48,7 +48,7 @@
                 <input asp-for="language" class="form-control" />
                 <span asp-validation-for="language" class="text-danger"></span>
             </div>
-            @if (Model.isAdmin)
+            @if(Convert.ToBoolean(ViewData["IsUserAdmin"]))
             {
                 <div class="form-group">
                     <label asp-for="isAdmin" class="control-label"></label>
@@ -62,11 +62,11 @@
         </form>
     </div>
 </div>
-@if (Model.isAdmin)
+@if (Convert.ToBoolean(ViewData["IsUserAdmin"]))
 {
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>
 }
 
 @section Scripts {
