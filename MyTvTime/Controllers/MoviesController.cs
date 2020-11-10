@@ -37,7 +37,16 @@ namespace MyTvTime.Controllers
                 return View(res);
             }
 
+
+           // ViewBag.watchList = await db.UserMovie.Where(um => um.UserId == 1).Include(m=> m.Movie).ToListAsync();
             return View(await movies.ToListAsync());
+        }
+
+        // GET: Movies
+        public async Task<IActionResult> WatchList()
+        {
+            var myWatchList = await db.UserMovie.Where(um => um.UserId == 1).Include(m => m.Movie).ToListAsync();
+            return View(myWatchList);
         }
 
         private async Task AddFromIMDBAsync(string search)
@@ -134,6 +143,20 @@ namespace MyTvTime.Controllers
             {
                 return NotFound();
             }
+
+            var movieWatched = await db.UserMovie.FirstOrDefaultAsync(um => (um.MovieId == id && um.UserId == int.Parse("1")));
+            if (movieWatched == null)
+            {
+                ViewBag.inWatchList = false;
+
+
+            } else
+            {
+                ViewBag.inWatchList = true;
+            }
+
+
+
 
             return View(movie);
         }
@@ -256,6 +279,38 @@ namespace MyTvTime.Controllers
         private bool MovieExists(int id)
         {
             return db.Movie.Any(e => e.ID == id);
+        }
+
+        [HttpPost, ActionName("AddToWatchList")]
+        public async Task<IActionResult> AddToWatchList(string movieId, string username, string isExist)
+		{
+            if (isExist == "0")
+            {
+                try
+                {
+                    await db.UserMovie.AddAsync(new UserMovie { MovieId = int.Parse(movieId), UserId = int.Parse(username) });
+                    await db.SaveChangesAsync();
+                }
+                catch (Exception err)
+                {
+                    Console.WriteLine(err.Message);
+                }
+            }
+            else
+			{
+                var userMovie = await db.UserMovie.FirstOrDefaultAsync(um=> (um.MovieId == int.Parse(movieId) && um.UserId == int.Parse(username)));
+
+                if(userMovie != null)
+				{
+                    db.UserMovie.Remove(userMovie);
+                    await db.SaveChangesAsync();
+                }
+
+            }
+
+           // var user = await db.User.Where(um => um.Id == int.Parse(username)).Include(um => um.Watchlist).ThenInclude(wl => wl.Movie).FirstOrDefaultAsync();
+
+			return RedirectToAction("Details", new { id = int.Parse(movieId) });
         }
     }
 }

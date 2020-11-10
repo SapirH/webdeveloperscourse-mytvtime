@@ -18,6 +18,8 @@ namespace MyTvTime.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<MovieGenres>().HasKey(k => new { k.MovieID, k.GenreID });
+            modelBuilder.Entity<UserMovie>()
+                   .HasKey(um => new { um.UserId, um.MovieId });
         }
 
         public DbSet<User> User { get; set; }
@@ -27,5 +29,7 @@ namespace MyTvTime.Data
         public DbSet<Genre> Genre { get; set; }
 
         public DbSet<MovieGenres> MovieGenres { get; set; }
+
+        public DbSet<UserMovie> UserMovie { get; set; }
     }
 }
