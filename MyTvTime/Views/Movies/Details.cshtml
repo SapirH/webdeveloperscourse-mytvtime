@@ -1,54 +1,178 @@
 ﻿@model MyTvTime.Models.Movie
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = Model.Name;
 }
 
 <h1>Details</h1>
 
+<div>
+    <h4>Movie</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-12">
+            @Html.DisplayFor(model => model.Name)
+        </dt>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Genres):
+        </dt>
+        @foreach (MovieGenres movieGenres in Model.Genres)
+        {
+            <dd class="col-sm-10">
+                @movieGenres.Genre.Name
+            </dd>
 
-	<div>
-		<h4>Movie</h4>
-		<hr />
-		<dl class="row">
-			<dt class="col-sm-2">
-				@Html.DisplayNameFor(model => model.Name)
-			</dt>
-			<dd class="col-sm-10">
-				@Html.DisplayFor(model => model.Name)
-			</dd>
-			<dt class="col-sm-2">
-				@Html.DisplayNameFor(model => model.ReleaseDate)
-			</dt>
-			<dd class="col-sm-10">
-				@Html.DisplayFor(model => model.ReleaseDate)
-			</dd>
-			<dt class="col-sm-2">
-				@Html.DisplayNameFor(model => model.Language)
-			</dt>
-			<dd class="col-sm-10">
-				@Html.DisplayFor(model => model.Language)
-			</dd>
-			<dt class="col-sm-2">
-				@Html.DisplayNameFor(model => model.Runtime)
-			</dt>
-			<dd class="col-sm-10">
-				@Html.DisplayFor(model => model.Runtime)
-			</dd>
-			<dt class="col-sm-2">
-				@Html.DisplayNameFor(model => model.Description)
-			</dt>
-			<dd class="col-sm-10">
-				@Html.DisplayFor(model => model.Description)
-			</dd>
-			<dt class="col-sm-2">
-				@Html.DisplayNameFor(model => model.ImageURL)
-			</dt>
-			<dd class="col-sm-10">
-				@Html.DisplayFor(model => model.ImageURL)
-			</dd>
-		</dl>
-	</div>
+        }
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ReleaseDate):
+        </dt>
+        <dd class="col-sm-10">
+            @Model.ReleaseDate.ToShortDateString()
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Language):
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Language)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Runtime):
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Runtime) min.
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Description):
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        <dd class="col-sm-10">
+            <img src="@Model.ImageURL" width="100" />
+        </dd>
+    </dl>
+</div>
+
+<!--Add Comment Section-->
+<div>
+    <form asp-controller="Comments" asp-action="AddComment">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <input name="movieID" value="@Model.ID" hidden />
+            <textarea name="commentText" class="form-control" placeholder="Write here..." required></textarea>
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Create" class="btn btn-primary" />
+        </div>
+    </form>
+</div>
+
+<!--Display Comment Section-->
+<div>
+    <h5>What Other People Think?</h5>
+    @if (!Model.Comments.Any())
+    {
+        <p>Be the first to add a comment.</p>
+    }
+    else
+    {
+        <ol>
+            @foreach (Comment comment in Model.Comments)
+            {
+                <li>
+                    <address>
+                        <a asp-controller="Users" asp-action="Details" asp-route-id="@comment.UserID">@comment.User.username</a>
+                    </address>
+                    <article id="commentText">
+                        @comment.Text
+                    </article>
+                    @if (comment.UserID == (int)ViewData["UserID"])
+                    {
+                        <button id="deleteButton" type="button" class="btn btn-danger" data-toggle="modal" data-id="@comment.ID" data-target="#deleteCommentModal">Delete</button>
+                        <button id="editButton" type="button" class="btn btn-info" data-toggle="modal" data-id="@comment.ID" data-target="#editCommentModal">Edit</button>
+                        <address>
+                            <a asp-controller="Comments" asp-action="Delete" asp-route-id="@comment.ID">Delete</a>
+                        </address>
+                    }
+                </li>
+            }
+        </ol>
+    }
+</div>
+
+<!--Delete Comment Modal Section-->
+<script type="text/javascript">
+    $(document).on('click', '#deleteButton', function () {
+        $('#deleteModalCommentText').text($('#commentText').text());
+        $('#commentIDSend').val($(this).data('id'));
+    });
+</script>
+
+<div id="deleteCommentModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Are you sure you want to delete this comment?</h4>
+            </div>
+            <div class="modal-body">
+                <p id="deleteModalCommentText"></p>
+            </div>
+            <div class="modal-footer">
+                <form asp-controller="Comments" asp-action="Delete" method="post">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <input id="commentIDSend" type="hidden" name="id" value="" />
+                    <input type="hidden" name="movieID" value="@Model.ID" />
+                    <button type="submit" class="btn btn-danger" formaction="/Comments/Delete">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Edit Comment Section-->
+<script type="text/javascript">
+    $(document).on('click', '#editButton', function () {
+        $('#deleteModalCommentText').text($('#commentText').text());
+        $('#commentIDSend').val($(this).data('id'));
+    });
+</script>
+
+<div id="editCommentModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Edit Comment</h4>
+            </div>
+            <div class="modal-body">
+                <form asp-controller="Comments" asp-action="AddComment">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group">
+                        <input name="movieID" value="@Model.ID" hidden />
+                        <textarea name="commentText" class="form-control" placeholder="Write here..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="Create" class="btn btn-primary" />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <form asp-controller="Comments" asp-action="Delete" method="post">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <input id="commentIDSend" type="hidden" name="id" value="" />
+                    <input type="hidden" name="movieID" value="@Model.ID" />
+                    <button type="submit" class="btn btn-danger" formaction="/Comments/Delete">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
 	<div>
 		<form asp-controller="Movies" asp-action="AddToWatchList" method="post">
 			<input type="hidden" name="movieId" value="@Html.DisplayFor(model => model.ID)" />
@@ -65,7 +189,4 @@
 			}
 		</form>
 	</div>
-	<div>
-		<a asp-action="Edit" asp-route-id="@Model.ID">Edit</a> |
-		<a asp-action="Index">Back to List</a>
-	</div>
+	

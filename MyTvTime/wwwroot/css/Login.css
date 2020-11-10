@@ -461,15 +461,14 @@ iframe {
     opacity: 1;
 }
 
+/*//////////////////////////////////////////////////////////////////
+[ Responsive ]*/
 @media (max-width: 992px) {
     .alert-validate::before {
         visibility: visible;
         opacity: 1;
     }
 }
-
-/*//////////////////////////////////////////////////////////////////
-[ Responsive ]*/
 @media (max-width: 576px) {
     .wrap-login100 {
         padding-top: 20px

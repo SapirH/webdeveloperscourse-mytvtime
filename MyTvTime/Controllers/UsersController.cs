@@ -16,9 +16,9 @@ namespace MyTvTime.Controllers
 {
     public class UsersController : Controller
     {
-        private readonly UserContext _context;
+        private readonly TVContext _context;
 
-        public UsersController(UserContext context)
+        public UsersController(TVContext context)
         {
             _context = context;
         }
@@ -26,15 +26,26 @@ namespace MyTvTime.Controllers
         // GET: Users
         public async Task<IActionResult> Index()
         {
-            return View(await _context.User.ToListAsync());
+            var users = from u in _context.User select u;
+            return View(await users.ToListAsync());
         }
 
         // GET: Users/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            ViewData["IsUserAdmin"] = ((ClaimsIdentity)User.Identity).FindFirst(type: "isAdmin").Value;
+            ViewData["UserId"] = ((ClaimsIdentity)User.Identity).FindFirst(type: "UserId").Value;
             if (id == null)
             {
-                return NotFound();
+                if (HttpContext.User.Identity.IsAuthenticated)
+                {
+                    var identity = ((ClaimsIdentity)User.Identity).FindFirst(type: "UserId").Value;
+                    id = Int32.Parse(identity);
+                }
+                else
+                {
+                    return NotFound();
+                }
             }
 
             var user = await _context.User
@@ -43,7 +54,6 @@ namespace MyTvTime.Controllers
             {
                 return NotFound();
             }
-
             return View(user);
         }
 
@@ -60,6 +70,8 @@ namespace MyTvTime.Controllers
             {
                 return NotFound();
             }
+            ViewData["UserId"] = ((ClaimsIdentity)User.Identity).FindFirst(type: "UserId").Value;
+            ViewData["IsUserAdmin"] = ((ClaimsIdentity)User.Identity).FindFirst(type: "isAdmin").Value;
             return View(user);
         }
 
@@ -68,8 +80,10 @@ namespace MyTvTime.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,username,password,email,birthdate")] User user)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,username,password,email,birthdate,country,language,sex, isAdmin")] User user)
         {
+            ViewData["IsUserAdmin"] = ((ClaimsIdentity)User.Identity).FindFirst(type: "isAdmin").Value;
+            ViewData["UserId"] = ((ClaimsIdentity)User.Identity).FindFirst(type: "UserId").Value;
             if (id != user.Id)
             {
                 return NotFound();
@@ -93,7 +107,7 @@ namespace MyTvTime.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return View("Details",user);
             }
             return View(user);
         }
@@ -113,7 +127,7 @@ namespace MyTvTime.Controllers
                 return NotFound();
             }
 
-            return View(user);
+            return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
         // POST: Users/Delete/5

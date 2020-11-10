@@ -11,27 +11,37 @@ using System.Web;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
+using MyTvTime.Data;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace MyTvTime.Controllers
 {
-	public class HomeController : Controller
-	{
-		private readonly ILogger<HomeController> _logger;
+    public class HomeController : Controller
+    {
+        private readonly TVContext db;
 
-		public HomeController(ILogger<HomeController> logger)
-		{
-			_logger = logger;
-		}
+        public HomeController(TVContext context)
+        {
+            db = context;
+        }
         [Authorize]
-		public IActionResult Index()
-		{
-			return View();
-		}
+        public IActionResult Index()
+        {
+            ViewData["IsUserAdmin"] = ((ClaimsIdentity)User.Identity).FindFirst(type: "isAdmin").Value;
+            ViewData["UserName"] = ((ClaimsIdentity)User.Identity).FindFirst(type: "username").Value;
+            return View();
+        }
+        public IActionResult Privacy()
+        {
+            return View();
+        }
 
-		public IActionResult Privacy()
-		{
-			return View();
-		}
+        [AllowAnonymous]
+        public IActionResult About()
+        {
+            return View();
+        }
 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

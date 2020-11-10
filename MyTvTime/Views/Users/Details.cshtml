@@ -9,58 +9,70 @@
 <div>
     <h4>User</h4>
     <hr />
-	<dl class="row">
-		<dt class="col-sm-2">
-			@Html.DisplayNameFor(model => model.username)
-		</dt>
-		<dd class="col-sm-10">
-			@Html.DisplayFor(model => model.username)
-		</dd>
-		<dt class="col-sm-2">
-			@Html.DisplayNameFor(model => model.password)
-		</dt>
-		<dd class="col-sm-10">
-			@Html.DisplayFor(model => model.password)
-		</dd>
-		<dt class="col-sm-2">
-			@Html.DisplayNameFor(model => model.email)
-		</dt>
-		<dd class="col-sm-10">
-			@Html.DisplayFor(model => model.email)
-		</dd>
-		<dt class="col-sm-2">
-			@Html.DisplayNameFor(model => model.birthdate)
-		</dt>
-		<dd class="col-sm-10">
-			@Html.DisplayFor(model => model.birthdate)
-		</dd>
-		<dt class="col-sm-2">
-			@Html.DisplayNameFor(model => model.sex)
-		</dt>
-		<dd class="col-sm-10">
-			@Html.DisplayFor(model => model.sex)
-		</dd>
-		<dt class="col-sm-2">
-			@Html.DisplayNameFor(model => model.country)
-		</dt>
-		<dd class="col-sm-10">
-			@Html.DisplayFor(model => model.country)
-		</dd>
-		<dt class="col-sm-2">
-			@Html.DisplayNameFor(model => model.language)
-		</dt>
-		<dd class="col-sm-10">
-			@Html.DisplayFor(model => model.language)
-		</dd>
-		<dt class="col-sm-2">
-			@Html.DisplayNameFor(model => model.isAdmin)
-		</dt>
-		<dd class="col-sm-10">
-			@Html.DisplayFor(model => model.isAdmin)
-		</dd>
-	</dl>
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.username)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.username)
+        </dd>
+        @if(Convert.ToInt32(ViewData["UserId"]) == Model.Id)
+        {
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.password)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.password)
+            </dd>
+        }
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.email)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.email)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.birthdate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.birthdate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.sex)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.sex)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.country)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.country)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.language)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.language)
+        </dd>
+        @if (Convert.ToBoolean(ViewData["IsUserAdmin"]))
+        {
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.isAdmin)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.isAdmin)
+            </dd>
+        }
+        </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    @if (Convert.ToInt32(ViewData["UserId"]) == Model.Id)
+    {
+        <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+    }
+    @if(Convert.ToBoolean(ViewData["IsUserAdmin"]))
+    {
+        <a asp-action="Index">| Back to users List</a>
+    }
 </div>

@@ -48,5 +48,7 @@ namespace MyTvTime.Models
 
 
 		
+
+		public ICollection<Comment> Comments { get; set; }
 	}
 }
