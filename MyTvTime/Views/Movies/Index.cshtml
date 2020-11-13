@@ -43,162 +43,49 @@
             <label class="control-label">Release Year: </label>
             <input type="number" name="ReleaseYear">
         </div>
-        <div class="search-field">
-            <label class="control-label">Genre: </label>
-            <input type="text" name="genre">
+        <div class="dropdown">
+            @Html.DropDownList("genre", ViewData["GenresSelectList"] as List<SelectListItem>, new { @class = "form-control" })
         </div>
         <input type="submit" value="Filter" />
 </div>
 </form>
 
-@if (!Model.Any())
-{
-    <script type="text/javascript">
-            //var search = window.location.search;
-            //if (search != "")
-            //{
-            //    //First request
-            //    var settings = {
-            //        "async": true,
-            //        "crossDomain": true,
-            //        "url": "https://movies-tvshows-data-imdb.p.rapidapi.com/" + search + "&type=get-movies-by-title",
-            //        "method": "GET",
-            //        "headers": {
-            //            "x-rapidapi-host": "movies-tvshows-data-imdb.p.rapidapi.com",
-            //            "x-rapidapi-key": "93f2bbe6bdmsh4a12d4d9e5b771dp14b702jsn8bc0f393b0ca"
-            //        }
-            //    }
-
-
-            //    //First callback
-            //    $.ajax(settings).done(function (response) {
-            //        var res = [];
-            //        for (var i = 0; i < 4; i++)
-            //            res.push(response.movie_results[i].imdb_id);
-
-            //        var movies = []
-
-            //        //Second request
-            //        var moviesPromises = res.map((movie) => {
-            //            var settings = {
-            //                "async": true,
-            //                "crossDomain": true,
-            //                "url": "https://movies-tvshows-data-imdb.p.rapidapi.com/?imdb=" + movie + "&type=get-movie-details",
-            //                "method": "GET",
-            //                "headers": {
-            //                    "x-rapidapi-host": "movies-tvshows-data-imdb.p.rapidapi.com",
-            //                    "x-rapidapi-key": "93f2bbe6bdmsh4a12d4d9e5b771dp14b702jsn8bc0f393b0ca"
-            //                }
-            //            }
-
-            //            //Second callback
-            //             return $.ajax(settings);
-            //        })
-
-            //        Promise.all(moviesPromises).then((values) => {
-
-            //            var movie = {
-            //                IMDBID: values[0].imdb_id,
-            //                Name: values[0].title,
-            //                Genres: values[0].Genres[0],
-            //                ReleaseDate: values[0].release_date,
-            //                Language: values[0].language[0] ,
-            //                Runtime: values[0].runtime,
-            //                Description: values[0].description,
-            //                ImageURL: values[0].title
-            //            }
-
-            //            alert(movie.Genres);
-
-            //            $.ajax({
-            //                url: "/Movies/CreateIMDB",
-            //                type: "POST",
-            //                data: {
-            //                    jsonData: JSON.stringify(movie)
-            //                }
-            //            }).done(function () { console.log('ok'); });
-
-            //            console.log(values);
-            //        })
-
-            //        console.log(response);
-            //    });
-            //}
-    </script>
-
-}
-
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Name)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ReleaseDate)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Language)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Runtime)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Description)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ImageURL)
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Name)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.ReleaseDate)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Language)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Runtime)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Description)
-                    </td>
-                    <td>
+<div class="container-fluid">
+    @if (ViewData["isIMDB"] != null)
+    {
+        <p>Results from IMDB...</p>
+    }
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-auto">
+                <ul style="list-style-type:none">
+                    <li>
                         <img src="@item.ImageURL" width="100" />
-                    </td>
-                    <td class="movie-function">
-                        @if (Convert.ToBoolean(ViewData["IsUserAdmin"]))
+                    </li>
+                    <li>
+                        @if (item.ID != -1)
                         {
-                            <a asp-action="Delete" asp-route-id="@item.ID">Delete |</a>
+                            <a asp-action="Details" asp-route-id="@item.ID">@item.Name</a>
                         }
-                        @if(Convert.ToBoolean(ViewData["IsUserAdmin"]))
+                        else
                         {
-                            <a asp-action="Edit" asp-route-id="@item.ID">Edit |</a>
+                            <a asp-action="AddMovie" asp-route-IMDBID="@item.IMDBID">@item.Name</a>
                         }
-                        <a asp-action="Details" asp-route-id="@item.ID">Details</a> 
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-<form asp-controller="Movies" asp-action="SearchInIMDB" method="get" id="SearchInIMDB">
+                    </li>
+                </ul>
+            </div>
+        }
+    </div>
+</div>
+
+<form asp-controller="Movies" asp-action="IndexIMDB" method="get">
         <div>
             <label class="control-label">
-                Dont find what you look for?
-                Try to search on IMDB
+                Didn't found what you were looking for?
+                Try searching using IMDB.
             </label>
-            <input type="text" name="title" placeholder="title">
+            <input type="text" name="title" placeholder="Title to search on IMDB...">
         </div>
-        <input type="submit" asp-action="SearchInIMDB" value="IMDB Search" />
+        <input type="submit" value="IMDB Search" />
 </form>

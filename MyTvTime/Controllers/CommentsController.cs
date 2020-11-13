@@ -47,16 +47,6 @@ namespace MyTvTime.Controllers
 
             return View(comment);
         }
-
-        /*
-        // GET: Comments/Create
-        public IActionResult Create()
-        {
-            ViewData["MovieID"] = new SelectList(_context.Movie, "ID", "ID");
-            ViewData["UserID"] = new SelectList(_context.User, "Id", "country");
-            return View();
-        }
-        */
         
         // POST: Comments/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
@@ -112,36 +102,20 @@ namespace MyTvTime.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,MovieID,UserID,Text,Date")] Comment comment)
+        public async Task<IActionResult> Edit(int id, int movieID, string newCommentText)
         {
-            if (id != comment.ID)
+            if (!string.IsNullOrWhiteSpace(newCommentText))
             {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
+                var comment = await db.Comment.FindAsync(id);
+                if (comment != null)
                 {
+                    comment.Date = DateTime.Now;
+                    comment.Text = newCommentText;
                     db.Update(comment);
                     await db.SaveChangesAsync();
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CommentExists(comment.ID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
             }
-            ViewData["MovieID"] = new SelectList(db.Movie, "ID", "ID", comment.MovieID);
-            ViewData["UserID"] = new SelectList(db.User, "Id", "country", comment.UserID);
-            return View(comment);
+            return RedirectToAction("Details", "Movies", new { id = movieID });
         }
 
         // GET: Comments/Delete/5
