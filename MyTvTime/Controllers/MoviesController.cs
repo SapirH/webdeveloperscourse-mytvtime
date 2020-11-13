@@ -15,9 +15,9 @@ namespace MyTvTime.Controllers
 {
     public class MoviesController : Controller
     {
-        private readonly UserContext db;
+        private readonly TVContext db;
 
-        public MoviesController(UserContext context)
+        public MoviesController(TVContext context)
         {
             db = context;
         }
@@ -38,7 +38,6 @@ namespace MyTvTime.Controllers
             }
 
 
-           // ViewBag.watchList = await db.UserMovie.Where(um => um.UserId == 1).Include(m=> m.Movie).ToListAsync();
             return View(await movies.ToListAsync());
         }
 
