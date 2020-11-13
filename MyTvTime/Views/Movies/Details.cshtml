@@ -83,13 +83,13 @@
                     <address>
                         <a asp-controller="Users" asp-action="Details" asp-route-id="@comment.UserID">@comment.User.username</a>
                     </address>
-                    <article id="commentText">
+                    <article>
                         @comment.Text
                     </article>
                     @if (comment.UserID == (int)ViewData["UserID"])
                     {
-                        <button id="deleteButton" type="button" class="btn btn-danger" data-toggle="modal" data-id="@comment.ID" data-target="#deleteCommentModal">Delete</button>
-                        <button id="editButton" type="button" class="btn btn-info" data-toggle="modal" data-id="@comment.ID" data-target="#editCommentModal">Edit</button>
+                        <button id="deleteButton" type="button" class="btn btn-danger" data-toggle="modal" data-id="@comment.ID" data-text="@comment.Text" data-target="#deleteCommentModal">Delete</button>
+                        <button id="editButton" type="button" class="btn btn-info" data-toggle="modal" data-id="@comment.ID" data-text="@comment.Text" data-target="#editCommentModal">Edit</button>
                         <address>
                             <a asp-controller="Comments" asp-action="Delete" asp-route-id="@comment.ID">Delete</a>
                         </address>
@@ -103,8 +103,8 @@
 <!--Delete Comment Modal Section-->
 <script type="text/javascript">
     $(document).on('click', '#deleteButton', function () {
-        $('#deleteModalCommentText').text($('#commentText').text());
-        $('#commentIDSend').val($(this).data('id'));
+        $('#deleteModalCommentText').text($(this).data('text'));
+        $('#commentIDToDelete').val($(this).data('id'));
     });
 </script>
 
@@ -121,7 +121,7 @@
             <div class="modal-footer">
                 <form asp-controller="Comments" asp-action="Delete" method="post">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <input id="commentIDSend" type="hidden" name="id" value="" />
+                    <input id="commentIDToDelete" type="hidden" name="id" value="" />
                     <input type="hidden" name="movieID" value="@Model.ID" />
                     <button type="submit" class="btn btn-danger" formaction="/Comments/Delete">Delete</button>
                 </form>
@@ -130,11 +130,11 @@
     </div>
 </div>
 
-<!--Edit Comment Section-->
+<!--Edit Comment Modal Section-->
 <script type="text/javascript">
     $(document).on('click', '#editButton', function () {
-        $('#deleteModalCommentText').text($('#commentText').text());
-        $('#commentIDSend').val($(this).data('id'));
+        $('#editModalCommentText').val($(this).data('text'));
+        $('#commentIDToEdit').val($(this).data('id'));
     });
 </script>
 
@@ -146,23 +146,16 @@
                 <h4 class="modal-title">Edit Comment</h4>
             </div>
             <div class="modal-body">
-                <form asp-controller="Comments" asp-action="AddComment">
+                <form asp-controller="Comments" asp-action="Edit">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <div class="form-group">
-                        <input name="movieID" value="@Model.ID" hidden />
-                        <textarea name="commentText" class="form-control" placeholder="Write here..." required></textarea>
+                        <input type="hidden" name="movieID" value="@Model.ID" />
+                        <input id="commentIDToEdit" type="hidden" name="id" value="" />
+                        <textarea id="editModalCommentText" name="newCommentText" class="form-control" required></textarea>
                     </div>
                     <div class="form-group">
-                        <input type="submit" value="Create" class="btn btn-primary" />
+                        <input type="submit" value="Edit" class="btn btn-primary" />
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <form asp-controller="Comments" asp-action="Delete" method="post">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <input id="commentIDSend" type="hidden" name="id" value="" />
-                    <input type="hidden" name="movieID" value="@Model.ID" />
-                    <button type="submit" class="btn btn-danger" formaction="/Comments/Delete">Delete</button>
                 </form>
             </div>
         </div>

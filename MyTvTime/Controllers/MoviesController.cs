@@ -16,10 +16,21 @@ namespace MyTvTime.Controllers
     public class MoviesController : Controller
     {
         private readonly TVContext db;
+        private int numMoviesToAdd = 5;
 
         public MoviesController(TVContext context)
         {
             db = context;
+        }
+
+        public async Task GenerateGenresSelectList()
+        {
+            List<SelectListItem> genresSelectList = new List<SelectListItem>();
+            genresSelectList.Add(new SelectListItem("", "-1"));
+            var allGenres = await (from g in db.Genre select g).ToListAsync();
+            foreach (Genre g in allGenres)
+                genresSelectList.Add(new SelectListItem(g.Name, g.ID.ToString()));
+            ViewData["GenresSelectList"] = genresSelectList;
         }
 
         // GET: Movies
@@ -27,107 +38,88 @@ namespace MyTvTime.Controllers
         {
             var movies = from m in db.Movie select m;
 
-            if (!string.IsNullOrEmpty(title))
+            await GenerateGenresSelectList();
+
+            //No search at all.
+            if (string.IsNullOrEmpty(title) && string.IsNullOrEmpty(language) && releaseYear == 0 && string.IsNullOrEmpty(genre))
+                return View(await movies.ToListAsync());
+
+            //Search by name was used.
+            if (!string.IsNullOrWhiteSpace(title))
             {
-                movies = movies.Where(s => s.Name.Contains(title));
-                List<Movie> res = await movies.ToListAsync();
-                if (!res.Any())
-                    await AddFromIMDBAsync(title);
-
-                return View(res);
+                //Show the movies found in our DB And if nothing was found automatically show results from IMDB.
+                movies = movies.Where(x => x.Name.Contains(title));
+                var moviesRes = await movies.ToListAsync();
+                if (!moviesRes.Any())
+                {
+                    ViewData["isIMDB"] = true;
+                    return View(await SearchIMDBAsync(title));
+                }
             }
+            
+            //If more searches were applied further filter the results (Works only on results from our DB).
+            if (!string.IsNullOrWhiteSpace(language))
+                movies = movies.Where(x => x.Language.Contains(language));
+            if (releaseYear > 0)
+                movies = movies.Where(x => x.ReleaseDate.Year.Equals(releaseYear));
+
+            int genreID = int.TryParse(genre, out genreID) ? genreID : -1;
+            if (genreID != -1)
+                movies = from m in movies join g in db.MovieGenres on m.ID equals g.MovieID where g.GenreID == genreID select m;
+
+            List<Movie> res = await movies.ToListAsync();
 
 
-            return View(await movies.ToListAsync());
+            return View(res);
         }
 
+        public async Task<IActionResult> IndexIMDB(string title)
         // GET: Movies
-        public async Task<IActionResult> WatchList()
+        
         {
+            ViewData["IsUserAdmin"] = ((ClaimsIdentity)User.Identity).FindFirst(type: "isAdmin").Value;
+
+            await GenerateGenresSelectList();
+
+            ViewData["isIMDB"] = true;
+
+            if (string.IsNullOrEmpty(title))
+                return View("Index", new List<Movie>());
+            return View("Index", await SearchIMDBAsync(title));
+        }
+        public async Task<IActionResult> WatchList() { 
+
             var myWatchList = await db.UserMovie.Where(um => um.UserId == 1).Include(m => m.Movie).ToListAsync();
             return View(myWatchList);
         }
 
-        private async Task AddFromIMDBAsync(string search)
+       
+
+        public async Task<List<Movie>> SearchIMDBAsync(string title)
         {
-            var client = new RestClient("https://rapidapi.p.rapidapi.com/?title=" + search + "&type=get-movies-by-title");
-            var request = new RestRequest(Method.GET);
-            request.AddHeader("x-rapidapi-host", "movies-tvshows-data-imdb.p.rapidapi.com");
-            request.AddHeader("x-rapidapi-key", "93f2bbe6bdmsh4a12d4d9e5b771dp14b702jsn8bc0f393b0ca");
-            var response = await client.ExecuteAsync(request);
-
-            MovieResultRoot movieResultRoot = JsonConvert.DeserializeObject<MovieResultRoot>(response.Content);
-
-            for (int i = 0; i < 5; i++)
-            {
-                if (!db.Movie.Where(m => m.IMDBID == movieResultRoot.movie_results[i].imdb_id).Any())
-                    await AddSingleMovieIMDBAsync(movieResultRoot.movie_results[i].imdb_id);
-            }
+            List<Movie> movies = new List<Movie>();
             
-        }
-
-        private async Task AddSingleMovieIMDBAsync(string IMDBID)
-        {
-            var client = new RestClient("https://rapidapi.p.rapidapi.com/?imdb=" + IMDBID + "&type=get-movie-details");
-            var request = new RestRequest(Method.GET);
-            request.AddHeader("x-rapidapi-host", "movies-tvshows-data-imdb.p.rapidapi.com");
-            request.AddHeader("x-rapidapi-key", "93f2bbe6bdmsh4a12d4d9e5b771dp14b702jsn8bc0f393b0ca");
-            var response = await client.ExecuteAsync(request);
-
-            IMDBMovieDetails md = JsonConvert.DeserializeObject<IMDBMovieDetails>(response.Content);
-
-            /*Parsing a release date or runtime that are not in correct format can result in crashing the website,
-             So we use the try parsing methods that won't raise exceptions. Also IMDB are storing lots of other things that are not really movies and we don't want to add
-            those to our DB, so we check to see if the movie we got is above 80 min long and that it actually have genres stored for it, 
-            because the chances of it being a legit movie are much higher.*/
-            DateTime date;
-            int run = int.TryParse(md.runtime, out run) ? run : default;
-            if (run <= 80 || md.genres == null)
-                return;
-
-            Movie m = new Movie
+            for (int i = 1; i <= 3; i++)
             {
-                IMDBID = md.imdb_id,
-                Name = md.title,
-                ReleaseDate = DateTime.TryParse(md.release_date, out date) ? date : default,
-                Language = md.language[0],
-                Runtime = run,
-                Description = md.description,
-            };
-            await GetMovieImageAsync(m);
-            
-            await db.Movie.AddAsync(m);
-            await db.SaveChangesAsync();
+                //Send the request through the API.
+                var client = new RestClient("https://movie-database-imdb-alternative.p.rapidapi.com/?s=" + title + "&page=" + i + "&r=json&type=movie");
+                var request = new RestRequest(Method.GET);
+                request.AddHeader("x-rapidapi-key", "93f2bbe6bdmsh4a12d4d9e5b771dp14b702jsn8bc0f393b0ca");
+                request.AddHeader("x-rapidapi-host", "movie-database-imdb-alternative.p.rapidapi.com");
+                var response = await client.ExecuteAsync(request);
 
-            //Handle the genres
-            foreach (string s in md.genres)
-            {
-                var genres = from g in db.Genre where (g.Name == s) select g;
-                if (!genres.Any())
-                {
-                    await db.Genre.AddAsync(new Genre { Name = s });
-                    await db.SaveChangesAsync();
-                    genres = from g in db.Genre where (g.Name == s) select g;
+
+                    if (i * 10 > int.Parse(resultsRoot.totalResults))
+                        i = 4;
+
+                    foreach (SearchMovieResult result in resultsRoot.Search)
+                        movies.Add(new Movie { ID = -1, Name = result.Title, IMDBID = result.imdbID, ImageURL = result.Poster });
                 }
-
-                await db.MovieGenres.AddAsync(new MovieGenres { MovieID = m.ID, GenreID = genres.First().ID });
             }
-            await db.SaveChangesAsync();
+
+            return movies;
         }
-
-        private async Task GetMovieImageAsync(Movie movie)
-        {
-            var client = new RestClient("https://rapidapi.p.rapidapi.com/?imdb=" + movie.IMDBID + "&type=get-movies-images-by-imdb");
-            var request = new RestRequest(Method.GET);
-            request.AddHeader("x-rapidapi-host", "movies-tvshows-data-imdb.p.rapidapi.com");
-            request.AddHeader("x-rapidapi-key", "93f2bbe6bdmsh4a12d4d9e5b771dp14b702jsn8bc0f393b0ca");
-            var response = await client.ExecuteAsync(request);
-
-            ImageResult imageResult = JsonConvert.DeserializeObject<ImageResult>(response.Content);
-            
-            movie.ImageURL = imageResult.poster;
-        }
-
+        
         // GET: Movies/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -160,90 +152,49 @@ namespace MyTvTime.Controllers
             return View(movie);
         }
 
-        // GET: Movies/Create
-        public IActionResult Create()
+        public async Task<IActionResult> AddMovieAsync(string IMDBID)
         {
-            return View();
-        }
+            var client = new RestClient("https://movie-database-imdb-alternative.p.rapidapi.com/?i=" + IMDBID +" &r=json&type=movie&plot=short");
+            var request = new RestRequest(Method.GET);
+            request.AddHeader("x-rapidapi-key", "93f2bbe6bdmsh4a12d4d9e5b771dp14b702jsn8bc0f393b0ca");
+            request.AddHeader("x-rapidapi-host", "movie-database-imdb-alternative.p.rapidapi.com");
+            var response = await client.ExecuteAsync(request);
 
-        // POST: Movies/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,IMDBID,Name,ReleaseDate,Language,Runtime,Description,ImageURL")] Movie movie)
-        {
-            if (ModelState.IsValid)
+            if (response.IsSuccessful)
             {
-                db.Add(movie);
-                await db.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(movie);
-        }
+                IMDBMovieDetails movieDetails = JsonConvert.DeserializeObject<IMDBMovieDetails>(response.Content);
 
-        [HttpPost]
-        public async Task<IActionResult> CreateIMDB(string jsonData)
-        {
-            Movie m = JsonConvert.DeserializeObject<Movie>(jsonData);
-            if (ModelState.IsValid)
-            {
-                //_context.Add(recievedData);
-                await db.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View();
-        }
-
-        // GET: Movies/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var movie = await db.Movie.FindAsync(id);
-            if (movie == null)
-            {
-                return NotFound();
-            }
-            return View(movie);
-        }
-
-        // POST: Movies/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,IMDBID,Name,ReleaseDate,Language,Runtime,Description,ImageURL")] Movie movie)
-        {
-            if (id != movie.ID)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
+                Movie m = new Movie
                 {
-                    db.Update(movie);
-                    await db.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
+                    IMDBID = movieDetails.imdbID,
+                    Name = movieDetails.Title,
+                    ReleaseDate = movieDetails.GetReleaseDateTime(),
+                    Runtime = movieDetails.GetRuntimeAsInt(),
+                    Description = movieDetails.Plot,
+                    Language = movieDetails.GetFirstLanguage(),
+                    ImageURL = movieDetails.Poster
+                };
+
+                await db.Movie.AddAsync(m);
+                await db.SaveChangesAsync();
+
+                string[] genres = movieDetails.GetGenresArray();
+                foreach (string s in genres)
                 {
-                    if (!MovieExists(movie.ID))
+                    var genreFromDB = from g in db.Genre where (g.Name == s) select g;
+                    if (!genreFromDB.Any())
                     {
-                        return NotFound();
+                        await db.Genre.AddAsync(new Genre { Name = s });
+                        await db.SaveChangesAsync();
                     }
-                    else
-                    {
-                        throw;
-                    }
+
+                    await db.MovieGenres.AddAsync(new MovieGenres { MovieID = m.ID, GenreID = genreFromDB.First().ID });
                 }
-                return RedirectToAction(nameof(Index));
+                await db.SaveChangesAsync();
+
+                return  RedirectToAction("Details", new { id = m.ID });
             }
-            return View(movie);
+            return Redirect("~/Error");
         }
 
         // GET: Movies/Delete/5
@@ -275,10 +226,6 @@ namespace MyTvTime.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool MovieExists(int id)
-        {
-            return db.Movie.Any(e => e.ID == id);
-        }
 
         [HttpPost, ActionName("AddToWatchList")]
         public async Task<IActionResult> AddToWatchList(string movieId, string username, string isExist)
