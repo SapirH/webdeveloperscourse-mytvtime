@@ -17,7 +17,7 @@ namespace MyTvTime.Controllers
     public class MoviesController : Controller
     {
         private readonly TVContext db;
-        private int numMoviesToAdd = 5;
+        private readonly int numMoviesToAdd = 5;
 
         public MoviesController(TVContext context)
         {
@@ -208,9 +208,10 @@ namespace MyTvTime.Controllers
                     {
                         await db.Genre.AddAsync(new Genre { Name = s });
                         await db.SaveChangesAsync();
+                        genreFromDB = from g in db.Genre where (g.Name == s) select g;
                     }
 
-                    await db.MovieGenres.AddAsync(new MovieGenres { MovieID = m.ID, GenreID = genreFromDB.First().ID });
+                    await db.MovieGenres.AddAsync(new MovieGenres { MovieID = m.ID, Movie = m, Genre = genreFromDB.First(), GenreID = genreFromDB.First().ID });
                 }
                 await db.SaveChangesAsync();
 

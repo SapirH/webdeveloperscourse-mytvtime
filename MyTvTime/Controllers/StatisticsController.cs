@@ -31,33 +31,15 @@ namespace MyTvTime.Controllers
 
         // GET: Statistics/GenersStatistics
 
-        //public JsonResult GenersStatistics()
-        //{
-        //    var movies = db.Movie
-        //        .Join(db.Movie,          // Get movie info from movies with 's book ID
-        //                movieSelector => movieSelector.ID,
-        //                genreSelector => genreSelector.ID,
-        //        (movie, genre) => new Movie()
-        //        {
-        //            // Keep movie data
-        //            IMDBID = movie.IMDBID,
-        //            Name = movie.Name,
-        //            ReleaseDate = movie.ReleaseDate,
-        //            Language = movie.Language,
-        //            Runtime = movie.Runtime,
-        //            Description = movie.Description,
-
-        //            // Get gener data
-        //            Genres = movie.Genres,
-        //            //genre = genre
-        //        }).GroupBy(movie => movie.Genres).Select(group => new
-        //        {
-        //            Name = group.First().Name,
-        //            Language = group.First().Language,
-        //            Count = group.Count(),
-        //        }).AsQueryable();
-        //    return Json(movies);
-        //}
+        public async Task<JsonResult> GenersStatisticsAsync()
+        {
+            var movies_groups = await db.MovieGenres.GroupBy(movieG => movieG.GenreID).Select(group => new
+            {
+                Genre = group.First().Genre.Name,
+                Count = group.Count(),
+            }).ToListAsync();
+            return Json(movies_groups);
+        }
 
         // GET: Statistics/LanguageStatistics
         public async Task<JsonResult> LanguageStatisticsAsync()
@@ -69,7 +51,5 @@ namespace MyTvTime.Controllers
             }).ToListAsync();
             return Json(movies_groups);
         }
-
-
     }
 }
