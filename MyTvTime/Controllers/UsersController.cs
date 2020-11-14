@@ -24,10 +24,22 @@ namespace MyTvTime.Controllers
         }
 
         // GET: Users
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string username, string country)
         {
             var users = from u in _context.User select u;
-            return View(await users.ToListAsync());
+
+            if(!string.IsNullOrWhiteSpace(username))
+			{
+                users= users.Where(u => u.username == username);
+			}
+
+            if(!string.IsNullOrWhiteSpace(country))
+			{
+                users= users.Where(u => u.country == country);
+            }
+
+            List<User> res = await users.ToListAsync();
+            return View(res);
         }
 
         // GET: Users/Details/5
@@ -126,8 +138,11 @@ namespace MyTvTime.Controllers
             {
                 return NotFound();
             }
-
-            return RedirectToAction(nameof(HomeController.Index), "Home");
+          
+            _context.User.Remove(user);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        
         }
 
         // POST: Users/Delete/5

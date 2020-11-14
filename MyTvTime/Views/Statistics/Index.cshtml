@@ -14,8 +14,6 @@
     <script type="text/javascript">
         $(function () {
             $.ajax('Statistics/LanguageStatistics/').done(function (grouped_Movies) {
-                console.log('now');
-                console.log(grouped_Movies);
                 var svg = d3.select("svg"),
                     margin = 200,
                     width = svg.attr("width") - margin,
@@ -53,7 +51,7 @@
 
                 g.append("g")
                     .call(d3.axisLeft(yScale).tickFormat(function (d) {
-                        return "$" + d;
+                        return d;
                     })
                         .ticks(10))
                     .append("text")

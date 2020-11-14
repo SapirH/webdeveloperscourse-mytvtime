@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -26,7 +27,7 @@ namespace MyTvTime.Controllers
         public async Task GenerateGenresSelectList()
         {
             List<SelectListItem> genresSelectList = new List<SelectListItem>();
-            genresSelectList.Add(new SelectListItem("", "-1"));
+          //  genresSelectList.Add(new SelectListItem("", "-1"));
             var allGenres = await (from g in db.Genre select g).ToListAsync();
             foreach (Genre g in allGenres)
                 genresSelectList.Add(new SelectListItem(g.Name, g.ID.ToString()));
@@ -34,7 +35,7 @@ namespace MyTvTime.Controllers
         }
 
         // GET: Movies
-        public async Task<IActionResult> Index(string title)
+        public async Task<IActionResult> Index(string title, string language, int releaseYear, string genre)
         {
             var movies = from m in db.Movie select m;
 
@@ -87,9 +88,28 @@ namespace MyTvTime.Controllers
                 return View("Index", new List<Movie>());
             return View("Index", await SearchIMDBAsync(title));
         }
-        public async Task<IActionResult> WatchList() { 
 
-            var myWatchList = await db.UserMovie.Where(um => um.UserId == 1).Include(m => m.Movie).ToListAsync();
+        public async Task<IActionResult> WatchList() {
+            int userId = HttpContext.User.Identity.IsAuthenticated ? int.Parse(((ClaimsIdentity)User.Identity).FindFirst(type: "UserId").Value) : 0;
+
+            var myWatchList = await db.UserMovie.Where(um => um.UserId == userId).Include(m => m.Movie).Include(m=> m.Movie.Genres).ToListAsync();
+
+            var MoviesId = myWatchList.Select(m => m.MovieId).ToArray();
+            var Genre = myWatchList.Select(um => um.Movie.Genres);
+            var GenreDistinct = Genre.SelectMany(item => item).Distinct().ToArray();
+            var GenereCount = GenreDistinct.GroupBy(item => item.GenreID).Select(group => new
+            {
+                GenreId = group.Key,
+                Count = group.Count()
+            }).OrderByDescending(x=>x.Count).ToArray();
+
+            if (GenereCount.Length > 1)
+            {
+                var RecommendedMovies = db.MovieGenres.Include(m => m.Movie).Where(mg => (mg.GenreID == GenereCount[0].GenreId || mg.GenreID == GenereCount[1].GenreId) && !MoviesId.Contains(mg.MovieID)).Select(mg => mg.Movie).Distinct();
+
+                ViewBag.RecommendedMovies = RecommendedMovies;
+            }
+
             return View(myWatchList);
         }
 
@@ -107,13 +127,16 @@ namespace MyTvTime.Controllers
                 request.AddHeader("x-rapidapi-key", "93f2bbe6bdmsh4a12d4d9e5b771dp14b702jsn8bc0f393b0ca");
                 request.AddHeader("x-rapidapi-host", "movie-database-imdb-alternative.p.rapidapi.com");
                 var response = await client.ExecuteAsync(request);
+                if(response.IsSuccessful)
+				{
+                    SearchMovieResultRoot resultsRoot = JsonConvert.DeserializeObject<SearchMovieResultRoot>(response.Content);
+                    if(resultsRoot.totalResults != null) {
+                        if (i * 10 > int.Parse(resultsRoot.totalResults))
+                            i = 4;
 
-
-                    if (i * 10 > int.Parse(resultsRoot.totalResults))
-                        i = 4;
-
-                    foreach (SearchMovieResult result in resultsRoot.Search)
-                        movies.Add(new Movie { ID = -1, Name = result.Title, IMDBID = result.imdbID, ImageURL = result.Poster });
+                        foreach (SearchMovieResult result in resultsRoot.Search)
+                            movies.Add(new Movie { ID = -1, Name = result.Title, IMDBID = result.imdbID, ImageURL = result.Poster });
+                    }
                 }
             }
 
@@ -128,26 +151,25 @@ namespace MyTvTime.Controllers
                 return NotFound();
             }
 
-            var movie = await db.Movie
-                .FirstOrDefaultAsync(m => m.ID == id);
+            var movie = await db.Movie.Where(m => m.ID == id).Include(x => x.Comments).ThenInclude(x => x.User).Include(x => x.Genres).ThenInclude(x => x.Genre)
+                .FirstOrDefaultAsync();
             if (movie == null)
             {
                 return NotFound();
             }
+            int userId = HttpContext.User.Identity.IsAuthenticated ? int.Parse(((ClaimsIdentity)User.Identity).FindFirst(type: "UserId").Value) : 0;
+           
+            var movieWatched = await db.UserMovie.FirstOrDefaultAsync(um => (um.MovieId == id && um.UserId == userId));
 
-            var movieWatched = await db.UserMovie.FirstOrDefaultAsync(um => (um.MovieId == id && um.UserId == int.Parse("1")));
+            ViewData["UserID"] = userId;
+
             if (movieWatched == null)
             {
                 ViewBag.inWatchList = false;
-
-
             } else
             {
                 ViewBag.inWatchList = true;
             }
-
-
-
 
             return View(movie);
         }
@@ -196,45 +218,16 @@ namespace MyTvTime.Controllers
             }
             return Redirect("~/Error");
         }
-
-        // GET: Movies/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var movie = await db.Movie
-                .FirstOrDefaultAsync(m => m.ID == id);
-            if (movie == null)
-            {
-                return NotFound();
-            }
-
-            return View(movie);
-        }
-
-        // POST: Movies/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var movie = await db.Movie.FindAsync(id);
-            db.Movie.Remove(movie);
-            await db.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-
+ 
         [HttpPost, ActionName("AddToWatchList")]
-        public async Task<IActionResult> AddToWatchList(string movieId, string username, string isExist)
+        public async Task<IActionResult> AddToWatchList(string movieId, string isExist)
 		{
+            int userId = HttpContext.User.Identity.IsAuthenticated ? int.Parse(((ClaimsIdentity)User.Identity).FindFirst(type: "UserId").Value) : 0;
             if (isExist == "0")
             {
                 try
                 {
-                    await db.UserMovie.AddAsync(new UserMovie { MovieId = int.Parse(movieId), UserId = int.Parse(username) });
+                    await db.UserMovie.AddAsync(new UserMovie { MovieId = int.Parse(movieId), UserId = userId });
                     await db.SaveChangesAsync();
                 }
                 catch (Exception err)
@@ -244,7 +237,7 @@ namespace MyTvTime.Controllers
             }
             else
 			{
-                var userMovie = await db.UserMovie.FirstOrDefaultAsync(um=> (um.MovieId == int.Parse(movieId) && um.UserId == int.Parse(username)));
+                var userMovie = await db.UserMovie.FirstOrDefaultAsync(um=> (um.MovieId == int.Parse(movieId) && um.UserId == userId));
 
                 if(userMovie != null)
 				{
@@ -253,8 +246,6 @@ namespace MyTvTime.Controllers
                 }
 
             }
-
-           // var user = await db.User.Where(um => um.Id == int.Parse(username)).Include(um => um.Watchlist).ThenInclude(wl => wl.Movie).FirstOrDefaultAsync();
 
 			return RedirectToAction("Details", new { id = int.Parse(movieId) });
         }
