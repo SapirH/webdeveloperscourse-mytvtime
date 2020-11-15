@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyTvTime.Data;
+using System.Security.Claims;
+using System;
 
 namespace MyTvTime.Controllers
 {
@@ -18,6 +20,10 @@ namespace MyTvTime.Controllers
         // GET: Statistics/Index
         public IActionResult Index()
         {
+            if (!Convert.ToBoolean(((ClaimsIdentity)User.Identity).FindFirst(type: "isAdmin").Value))
+            {
+                return RedirectToAction(nameof(AuthController.AccessDenied), "Auth");
+            }
             return View();
         }
 

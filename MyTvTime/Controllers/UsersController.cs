@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyTvTime.Data;
 using MyTvTime.Models;
+using System.Security.Claims;
 
 namespace MyTvTime.Controllers
 {
@@ -23,6 +24,10 @@ namespace MyTvTime.Controllers
         // GET: Users
         public async Task<IActionResult> Index(string username, string country)
         {
+            if(!Convert.ToBoolean(((ClaimsIdentity)User.Identity).FindFirst(type: "isAdmin").Value))
+            {
+                return RedirectToAction(nameof(AuthController.AccessDenied), "Auth");
+            }
             var users = from u in _context.User select u;
 
             if(!string.IsNullOrWhiteSpace(username))
@@ -124,6 +129,10 @@ namespace MyTvTime.Controllers
         // GET: Users/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+            if (!Convert.ToBoolean(((ClaimsIdentity)User.Identity).FindFirst(type: "isAdmin").Value))
+            {
+                return RedirectToAction(nameof(AuthController.AccessDenied), "Auth");
+            }
             if (id == null)
             {
                 return NotFound();

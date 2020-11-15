@@ -42,6 +42,8 @@ namespace MyTvTime
             services.AddRazorPages(options =>
             {
                 options.Conventions.AuthorizeFolder("/Home");
+                options.Conventions.AuthorizeFolder("/Movies");
+                options.Conventions.AuthorizeFolder("/Statistics");
                 options.Conventions.AuthorizeFolder("/Users");
 				options.Conventions.AllowAnonymousToPage("/Login");
 				options.Conventions.AllowAnonymousToPage("/Create");

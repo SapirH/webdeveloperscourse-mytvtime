@@ -42,15 +42,15 @@ namespace MyTvTime.Models
                           password = "Aa123123",
                           email = "liav@gmail.com",
                           sex = "Male",
-                          country = "Ghana",
+                          country = "Ethiopia",
                           birthdate = new DateTime(1996, 11, 27),
-                          language = "French",
+                          language = "Spanish",
                           isAdmin = true
                       },
                       new User
                       {
-                          username = "user",
-                          password = "user",
+                          username = "User123",
+                          password = "User123",
                           email = "user@gmail.com",
                           sex = "Male",
                           country = "Ghana",
