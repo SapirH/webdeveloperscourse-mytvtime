@@ -210,8 +210,10 @@ namespace MyTvTime.Controllers
                         await db.SaveChangesAsync();
                         genreFromDB = from g in db.Genre where (g.Name == s) select g;
                     }
-
-                    await db.MovieGenres.AddAsync(new MovieGenres { MovieID = m.ID, Movie = m, Genre = genreFromDB.First(), GenreID = genreFromDB.First().ID });
+                    Genre genre = genreFromDB.First();
+                    var newMovieGenre = new MovieGenres { MovieID = m.ID, Movie = m, GenreID = genre.ID, Genre = genre };
+                    await db.MovieGenres.AddAsync(newMovieGenre);
+                    await db.SaveChangesAsync();
                 }
                 await db.SaveChangesAsync();
 
