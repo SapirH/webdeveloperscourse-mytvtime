@@ -1,5 +1,3 @@
-using System;
-
 namespace MyTvTime.Models
 {
     public class ErrorViewModel

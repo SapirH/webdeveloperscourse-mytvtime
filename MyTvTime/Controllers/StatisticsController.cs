@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using MyTvTime.Data;
-using MyTvTime.Models;
-using Newtonsoft.Json;
-using RestSharp;
 
 namespace MyTvTime.Controllers
 {
@@ -33,12 +25,18 @@ namespace MyTvTime.Controllers
 
         public async Task<JsonResult> GenersStatisticsAsync()
         {
-            var movies_groups = await db.MovieGenres.GroupBy(movieG => movieG.GenreID).Select(group => new
+            var mg = db.MovieGenres.Include(mg => mg.Genre).Select(mg => new
             {
-                Genre = group.First().Genre.Name,
+                GenreName = mg.Genre.Name,
+            }).AsQueryable();
+
+            var genres_groups = await mg.GroupBy(gm => gm.GenreName).Select(group => new
+            {
+                Genre = group.Key,
                 Count = group.Count(),
             }).ToListAsync();
-            return Json(movies_groups);
+
+            return Json(genres_groups);
         }
 
         // GET: Statistics/LanguageStatistics

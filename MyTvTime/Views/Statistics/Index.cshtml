@@ -109,7 +109,7 @@
                     .attr("transform", "translate(" + 100 + "," + 100 + ")");
 
                 xScale.domain(grouped_Movies.map(function (d) {
-                    return d.Genre;
+                    return d.genre;
                 }));
                 yScale.domain([0, d3.max(grouped_Movies, function (d) {
                     return d.count;
@@ -145,7 +145,7 @@
                     .style("fill", "steelblue")
                     .attr("class", "bar")
                     .attr("x", function (d) {
-                        return xScale(d.Genre);
+                        return xScale(d.genre);
                     })
                     .attr("y", function (d) {
                         return yScale(d.count);
