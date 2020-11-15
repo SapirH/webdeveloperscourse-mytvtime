@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using MyTvTime.Models;
 
 namespace MyTvTime.Data
@@ -18,6 +13,8 @@ namespace MyTvTime.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<MovieGenres>().HasKey(k => new { k.MovieID, k.GenreID });
+            modelBuilder.Entity<UserMovie>()
+                   .HasKey(um => new { um.UserId, um.MovieId });
         }
 
         public DbSet<User> User { get; set; }
@@ -29,5 +26,7 @@ namespace MyTvTime.Data
         public DbSet<MovieGenres> MovieGenres { get; set; }
 
         public DbSet<Comment> Comment { get; set; }
+
+        public DbSet<UserMovie> UserMovie { get; set; }
     }
 }

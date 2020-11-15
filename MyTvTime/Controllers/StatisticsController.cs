@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using MyTvTime.Data;
-using MyTvTime.Models;
-using Newtonsoft.Json;
-using RestSharp;
 
 namespace MyTvTime.Controllers
 {
@@ -31,33 +23,21 @@ namespace MyTvTime.Controllers
 
         // GET: Statistics/GenersStatistics
 
-        //public JsonResult GenersStatistics()
-        //{
-        //    var movies = db.Movie
-        //        .Join(db.Movie,          // Get movie info from movies with 's book ID
-        //                movieSelector => movieSelector.ID,
-        //                genreSelector => genreSelector.ID,
-        //        (movie, genre) => new Movie()
-        //        {
-        //            // Keep movie data
-        //            IMDBID = movie.IMDBID,
-        //            Name = movie.Name,
-        //            ReleaseDate = movie.ReleaseDate,
-        //            Language = movie.Language,
-        //            Runtime = movie.Runtime,
-        //            Description = movie.Description,
+        public async Task<JsonResult> GenersStatisticsAsync()
+        {
+            var mg = db.MovieGenres.Include(mg => mg.Genre).Select(mg => new
+            {
+                GenreName = mg.Genre.Name,
+            }).AsQueryable();
 
-        //            // Get gener data
-        //            Genres = movie.Genres,
-        //            //genre = genre
-        //        }).GroupBy(movie => movie.Genres).Select(group => new
-        //        {
-        //            Name = group.First().Name,
-        //            Language = group.First().Language,
-        //            Count = group.Count(),
-        //        }).AsQueryable();
-        //    return Json(movies);
-        //}
+            var genres_groups = await mg.GroupBy(gm => gm.GenreName).Select(group => new
+            {
+                Genre = group.Key,
+                Count = group.Count(),
+            }).ToListAsync();
+
+            return Json(genres_groups);
+        }
 
         // GET: Statistics/LanguageStatistics
         public async Task<JsonResult> LanguageStatisticsAsync()
@@ -69,7 +49,5 @@ namespace MyTvTime.Controllers
             }).ToListAsync();
             return Json(movies_groups);
         }
-
-
     }
 }

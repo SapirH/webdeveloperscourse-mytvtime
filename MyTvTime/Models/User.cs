@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using MyTvTime.NamespaceAnnotations;
 
 namespace MyTvTime.Models
 {
-	public class User
+    public class User
 	{
+		public User() : base()
+		{
+			this.Watchlist = new HashSet<UserMovie>();
+		}
+
 		public int Id { get; set; }
 
 		[Required(ErrorMessage = "Username is required")]
@@ -36,6 +39,12 @@ namespace MyTvTime.Models
 		[Required(ErrorMessage = "You have to choose your language")]
 		public string language { get; set; }
 		public bool isAdmin { get; set; }
+
+		
+		public ICollection<UserMovie> Watchlist { get; set; }
+
+
+		
 
 		public ICollection<Comment> Comments { get; set; }
 	}

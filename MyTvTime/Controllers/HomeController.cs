@@ -1,18 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using MyTvTime.Models;
-using System.Text;
-using System.Web;
-using System.Security.Cryptography;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
 using MyTvTime.Data;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace MyTvTime.Controllers

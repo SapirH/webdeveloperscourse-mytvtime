@@ -1,204 +1,151 @@
 ﻿@model IEnumerable<MyTvTime.Models.Movie>
 
 @{
-    ViewData["Title"] = "Index";
-    <script type="text/javascript">
+	ViewData["Title"] = "Movies";
+	<script type="text/javascript">
 
-        $(document).ready(function () {
-            var languages = $('#language');
-            var genres = $('#genre');
-            var languageSettings = {
-                "async": true,
-                "crossDomain": true,
-                "url": "https://wft-geo-db.p.rapidapi.com/v1/locale/languages?limit=10",
-                "method": "GET",
-                "headers": {
-                    "x-rapidapi-host": "wft-geo-db.p.rapidapi.com",
-                    "x-rapidapi-key": "58193b92e9msh4940fad70ac6d4fp1bfe08jsn592fbe2245b9"
-                }
-            }
-            $.ajax(languageSettings).done(function (response) {
-                languages.empty().append($('<option></option>').val('').text('Please select'));
-                $.each(response.data, function (index, item) {
-                    languages.append($(`<option></option>`).val(item.name).text(item.name));
-                });
-            });
-        });
-    </script>
+		$(document).ready(function () {
+			var languages = $('#language');
+			var genres = $('#genre');
+			var languageSettings = {
+				"async": true,
+				"crossDomain": true,
+				"url": "https://wft-geo-db.p.rapidapi.com/v1/locale/languages?limit=10",
+				"method": "GET",
+				"headers": {
+					"x-rapidapi-host": "wft-geo-db.p.rapidapi.com",
+					"x-rapidapi-key": "58193b92e9msh4940fad70ac6d4fp1bfe08jsn592fbe2245b9"
+				}
+			}
+			$.ajax(languageSettings).done(function (response) {
+				languages.empty().append($('<option></option>').val('').text('Language'));
+				$.each(response.data, function (index, item) {
+					languages.append($(`<option></option>`).val(item.name).text(item.name));
+				});
+			});
+		});
+	</script>
 }
 
-<h1>Index</h1>
+<style>
+	input:focus {
+		outline: 0;
+	}
+
+	.filterInput > input {
+		border-radius: 14px;
+		text-align: center;
+		width: 80%;
+		border: 2px solid gray;
+	}
+
+	.filterInput > select {
+		border-radius: 14px;
+		width: 80%;
+		border: 2px solid gray;
+	}
+
+	.filterButtom {
+		border-radius: 14px;
+		border: 0px;
+		background: #1976d2;
+		height: 100%;
+		width: 10%;
+		color: white;
+	}
+
+	.imdbFilter > input {
+		border-radius: 14px;
+		text-align: center;
+		border: 2px solid gray;
+	}
+
+	.imdbFilterButtom {
+		border-radius: 14px;
+		border: 0px;
+		background: #1976d2;
+		width: 10%;
+		color: white;
+		margin-left: 5%
+	}
+
+	.noMovies {
+		width: 100%;
+		height: 100%;
+		text-align: center;
+	}
+</style>
+
+<h1>Search Movie</h1>
 
 <form asp-controller="Movies" asp-action="Index" method="get">
-    <div class="search-section">
-        <div class="search-field">
-            <label class="control-label">Title: </label>
-            <input type="text" id="title-field" name="title">
-        </div>
-        <div class="search-field">
-            <label class="control-label">Language: </label>
-            <select id="language" name="language" class="form-control"></select>
-        </div>
-        <div class="search-field">
-            <label class="control-label">Release Year: </label>
-            <input type="number" name="ReleaseYear">
-        </div>
-        <div class="search-field">
-            <label class="control-label">Genre: </label>
-            <input type="text" name="genre">
-        </div>
-        <input type="submit" value="Filter" />
-</div>
+	<div class="search-section" style="margin: 50px 0px 25px;">
+		<div class="search-field filterInput">
+			<input type="text" id="title-field" name="title" placeholder="Title">
+		</div>
+		<div class="search-field filterInput">
+			<select id="language" name="language" class="form-control "></select>
+		</div>
+		<div class="search-field filterInput">
+			<input type="number" name="ReleaseYear" placeholder="Release Year">
+		</div>
+		<div class="search-field filterInput">
+			@Html.DropDownList("genre", ViewData["GenresSelectList"] as List<SelectListItem>, "Genre", new { @class = "form-control" })
+		</div>
+		<input type="submit" value="Filter" class="filterButtom" />
+	</div>
 </form>
 
-@if (!Model.Any())
+
+<form asp-controller="Movies" asp-action="IndexIMDB" method="get">
+	<div style="display:flex; height:30px; margin-bottom:50px">
+		<div class="imdbFilter">
+			<label class="control-label">
+				Didn't found what you were looking for?
+				Try searching using IMDB.
+			</label>
+			<input type="text" name="title" placeholder="Title to search on IMDB...">
+		</div>
+		<input type="submit" value="IMDB Search" class="imdbFilterButtom" />
+	</div>
+
+</form>
+<hr />
+
+@if (Model.Count() == 0)
 {
-    <script type="text/javascript">
-            //var search = window.location.search;
-            //if (search != "")
-            //{
-            //    //First request
-            //    var settings = {
-            //        "async": true,
-            //        "crossDomain": true,
-            //        "url": "https://movies-tvshows-data-imdb.p.rapidapi.com/" + search + "&type=get-movies-by-title",
-            //        "method": "GET",
-            //        "headers": {
-            //            "x-rapidapi-host": "movies-tvshows-data-imdb.p.rapidapi.com",
-            //            "x-rapidapi-key": "93f2bbe6bdmsh4a12d4d9e5b771dp14b702jsn8bc0f393b0ca"
-            //        }
-            //    }
-
-
-            //    //First callback
-            //    $.ajax(settings).done(function (response) {
-            //        var res = [];
-            //        for (var i = 0; i < 4; i++)
-            //            res.push(response.movie_results[i].imdb_id);
-
-            //        var movies = []
-
-            //        //Second request
-            //        var moviesPromises = res.map((movie) => {
-            //            var settings = {
-            //                "async": true,
-            //                "crossDomain": true,
-            //                "url": "https://movies-tvshows-data-imdb.p.rapidapi.com/?imdb=" + movie + "&type=get-movie-details",
-            //                "method": "GET",
-            //                "headers": {
-            //                    "x-rapidapi-host": "movies-tvshows-data-imdb.p.rapidapi.com",
-            //                    "x-rapidapi-key": "93f2bbe6bdmsh4a12d4d9e5b771dp14b702jsn8bc0f393b0ca"
-            //                }
-            //            }
-
-            //            //Second callback
-            //             return $.ajax(settings);
-            //        })
-
-            //        Promise.all(moviesPromises).then((values) => {
-
-            //            var movie = {
-            //                IMDBID: values[0].imdb_id,
-            //                Name: values[0].title,
-            //                Genres: values[0].Genres[0],
-            //                ReleaseDate: values[0].release_date,
-            //                Language: values[0].language[0] ,
-            //                Runtime: values[0].runtime,
-            //                Description: values[0].description,
-            //                ImageURL: values[0].title
-            //            }
-
-            //            alert(movie.Genres);
-
-            //            $.ajax({
-            //                url: "/Movies/CreateIMDB",
-            //                type: "POST",
-            //                data: {
-            //                    jsonData: JSON.stringify(movie)
-            //                }
-            //            }).done(function () { console.log('ok'); });
-
-            //            console.log(values);
-            //        })
-
-            //        console.log(response);
-            //    });
-            //}
-    </script>
-
+	<div class="noMovies">
+		<p>- No Movie Found -</p>
+	</div>
 }
-
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Name)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ReleaseDate)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Language)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Runtime)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Description)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ImageURL)
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Name)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.ReleaseDate)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Language)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Runtime)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Description)
-                    </td>
-                    <td>
-                        <img src="@item.ImageURL" width="100" />
-                    </td>
-                    <td class="movie-function">
-                        @if (Convert.ToBoolean(ViewData["IsUserAdmin"]))
-                        {
-                            <a asp-action="Delete" asp-route-id="@item.ID">Delete |</a>
-                        }
-                        @if(Convert.ToBoolean(ViewData["IsUserAdmin"]))
-                        {
-                            <a asp-action="Edit" asp-route-id="@item.ID">Edit |</a>
-                        }
-                        <a asp-action="Details" asp-route-id="@item.ID">Details</a> 
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+	<div class="container-fluid">
+		@if (ViewData["isIMDB"] != null)
+		{
+			<p>Results from IMDB...</p>
+		}
+		<div class="row">
+			@foreach (var item in Model)
+			{
+				<div class="col-md-auto" style="width: 20%;">
+					<ul style="list-style-type:none">
+						<li style="width: 30%;">
+							<img src="@item.ImageURL" width="100" style="height: 25vh" />
+						</li>
+						<li style="text-align: center;width: 70%;">
+							@if (item.ID != -1)
+							{
+							<a asp-action="Details" asp-route-id="@item.ID">@item.Name</a>
+							}
+							else
+							{
+							<a asp-action="AddMovie" asp-route-IMDBID="@item.IMDBID">@item.Name</a>
+							}
+						</li>
+					</ul>
+				</div>
+			}
+		</div>
+	</div>
 }
-<form asp-controller="Movies" asp-action="SearchInIMDB" method="get" id="SearchInIMDB">
-        <div>
-            <label class="control-label">
-                Dont find what you look for?
-                Try to search on IMDB
-            </label>
-            <input type="text" name="title" placeholder="title">
-        </div>
-        <input type="submit" asp-action="SearchInIMDB" value="IMDB Search" />
-</form>

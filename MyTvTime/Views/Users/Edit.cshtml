@@ -3,63 +3,128 @@
 @{
     ViewData["Title"] = "Edit";
 }
+<script type="text/javascript">
 
-<h1>Edit</h1>
+	function getDataOnSelectElement(selectElement, settings, type) {
+		$.ajax(settings).done(function (response) {
+				$.each(response.data, function (index, item) {
+					selectElement.append($(`<option value=${item.name}></option>`).val(item.name).text(item.name));
+				});
+			});
+		}
 
-<h4>User</h4>
+		$(document).ready(function () {
+			var languages = $('#language');
+			var countries = $('#country');
+
+
+			var languageSettings = {
+				"async": true,
+				"crossDomain": true,
+				"url": "https://wft-geo-db.p.rapidapi.com/v1/locale/languages?limit=10",
+				"method": "GET",
+				"headers": {
+					"x-rapidapi-host": "wft-geo-db.p.rapidapi.com",
+					"x-rapidapi-key": "58193b92e9msh4940fad70ac6d4fp1bfe08jsn592fbe2245b9"
+				}
+			}
+
+
+			var countriesSettings = {
+				"async": true,
+				"crossDomain": true,
+				"url": "https://wft-geo-db.p.rapidapi.com/v1/geo/countries?limit=10",
+				"method": "GET",
+				"headers": {
+					"x-rapidapi-host": "wft-geo-db.p.rapidapi.com",
+					"x-rapidapi-key": "58193b92e9msh4940fad70ac6d4fp1bfe08jsn592fbe2245b9"
+				}
+			}
+
+			getDataOnSelectElement(countries, countriesSettings, 'Country');
+			setTimeout(() => {
+				getDataOnSelectElement(languages, languageSettings, 'Language');
+			}, 2000);
+
+			$('#show-password').on("click", function () {
+				if (this.id == 'show-password') {
+					$('#txt-password').attr('type', 'text');
+					$('#show-password-icon').removeClass('fa-eye').addClass('fa-eye-slash');
+					$(this).attr('id', 'hide-password');
+				}
+				else {
+					$('#txt-password').attr('type', 'password');
+					$('#show-password-icon').removeClass('fa-eye-slash').addClass('fa-eye');
+					$(this).attr('id', 'show-password');
+				}
+			});
+
+		});
+</script>
+
+<h1>Edit @Model.username</h1>
+
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="username" class="control-label"></label>
-                <input asp-for="username" class="form-control" />
-                <span asp-validation-for="username" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="password" class="control-label"></label>
-                <input asp-for="password" class="form-control" />
-                <span asp-validation-for="password" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="email" class="control-label"></label>
-                <input asp-for="email" class="form-control" />
-                <span asp-validation-for="email" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="birthdate" class="control-label"></label>
-                <input asp-for="birthdate" class="form-control" />
-                <span asp-validation-for="birthdate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="sex" class="control-label"></label>
-                <input asp-for="sex" class="form-control" />
-                <span asp-validation-for="sex" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="country" class="control-label"></label>
-                <input asp-for="country" class="form-control" />
-                <span asp-validation-for="country" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="language" class="control-label"></label>
-                <input asp-for="language" class="form-control" />
-                <span asp-validation-for="language" class="text-danger"></span>
-            </div>
-            @if(Convert.ToBoolean(ViewData["IsUserAdmin"]))
-            {
-                <div class="form-group">
-                    <label asp-for="isAdmin" class="control-label"></label>
-                    <input asp-for="isAdmin" class="form-control" />
-                    <span asp-validation-for="isAdmin" class="text-danger"></span>
-                </div>
-            }
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+		<form asp-action="Edit">
+			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+			<input type="hidden" asp-for="Id" />
+			<div class="form-group">
+				<label asp-for="username" class="control-label"></label>
+				<input asp-for="username" class="form-control" />
+				<span asp-validation-for="username" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="password" class="control-label"></label>
+				<input asp-for="password" type="password" class="form-control" />
+				<span asp-validation-for="password" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="email" class="control-label"></label>
+				<input asp-for="email" class="form-control" />
+				<span asp-validation-for="email" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="birthdate" class="control-label"></label>
+				<input asp-for="birthdate" class="form-control" />
+				<span asp-validation-for="birthdate" class="text-danger"></span>
+			</div>
+			<div class="form-group wrap-input">
+				<select asp-for="sex" class="form-control">
+					<option>Please select Gender</option>
+					<option value="Male">Male</option>
+					<option value="Female">Female</option>
+				</select>
+				<span asp-validation-for="sex" class="text-danger"></span>
+			</div>
+			<div class="form-group wrap-input">
+				<select asp-for="country" class="form-control">
+					<option>@Model.country</option>
+				</select>
+				<span asp-validation-for="country" class="text-danger"></span>
+			</div>
+			<div class="form-group wrap-input">
+				<select asp-for="language" class="form-control">
+					<option>@Model.language</option>
+				</select>
+				<span asp-validation-for="language" class="text-danger"></span>
+				
+			</div>
+	
+			
+			@if (Convert.ToBoolean(ViewData["IsUserAdmin"]))
+			{
+				<div class="form-group">
+					<label asp-for="isAdmin" class="control-label"></label>
+					<input asp-for="isAdmin" class="form-control" />
+					<span asp-validation-for="isAdmin" class="text-danger"></span>
+				</div>
+			}
+			<div class="form-group">
+				<input type="submit" value="Save" class="btn btn-primary" />
+			</div>
+		</form>
     </div>
 </div>
 @if (Convert.ToBoolean(ViewData["IsUserAdmin"]))

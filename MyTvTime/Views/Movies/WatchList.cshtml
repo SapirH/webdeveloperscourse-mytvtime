@@ -1,0 +1,88 @@
+﻿
+@{
+	ViewData["Title"] = "WatchList";
+}
+
+<style>
+	.noMovies {
+		width: 100%;
+		height: 100%;
+		text-align: center;
+	}
+
+		.noMovies p {
+			margin-top: 15%;
+			font-weight: bold;
+		}
+
+	.moviesList {
+		display: flex;
+		flex-flow: row wrap;
+		width: 100%;
+		overflow: auto;
+		max-height: 43vh;
+	}
+
+	.movieBlock {
+		display: inline-block;
+		margin-right: 2%;
+	}
+
+	.movieImg {
+		width: 10vw;
+		height: 30vh;
+	}
+
+	.movieText {
+		width: 10vw;
+		font-weight: bold;
+		text-align: center;
+	}
+</style>
+
+
+<h1>My Watch List</h1>
+<hr />
+@if (Model.Count == 0)
+{
+	<div class="noMovies">
+		<p>- Add your first movie -</p>
+	</div>
+}
+else
+{
+	<div class="moviesList">
+		@foreach (var item in Model)
+		{
+
+			<div class="movieBlock">
+				<img src="@item.Movie.ImageURL" class="movieImg" />
+
+				<div class="movieText">
+					<a asp-action="Details" asp-route-id="@item.Movie.ID" style="color: black"> @item.Movie.Name </a>
+				</div>
+			</div>
+		}
+	</div>
+}
+
+@if(ViewBag.RecommendedMovies != null){
+<div style="margin-top:2%">
+	<h4>Recommended For You</h4>
+	<hr />
+	<div class="moviesList">
+
+		@foreach (var item in ViewBag.RecommendedMovies)
+		{
+
+			<div class="movieBlock">
+				<img src="@item.ImageURL" class="movieImg" />
+
+				<div class="movieText">
+					<a asp-action="Details" asp-route-id="@item.ID" style="color: black"> @item.Name </a>
+				</div>
+			</div>
+		}
+	</div>
+</div>
+}

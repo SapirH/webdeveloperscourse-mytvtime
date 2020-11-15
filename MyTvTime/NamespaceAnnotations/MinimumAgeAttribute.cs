@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MyTvTime.NamespaceAnnotations
 {
-	public class MinimumAgeAttribute : ValidationAttribute
+    public class MinimumAgeAttribute : ValidationAttribute
 	{
         int _minimumAge;
         string _errorMessage;

@@ -5,9 +5,9 @@
 
 	<script type="text/javascript">
 
-		function getDataOnSelectElement(selectElement, settings) {
+		function getDataOnSelectElement(selectElement, settings, type) {
 			$.ajax(settings).done(function (response) {
-				selectElement.empty().append($('<option></option>').val('').text('Please select'));
+				selectElement.empty().append($('<option></option>').val('').text('Please select ' + type));
 				$.each(response.data, function (index, item) {
 					selectElement.append($(`<option></option>`).val(item.name).text(item.name));
 				});
@@ -30,7 +30,7 @@
 				}
 			}
 
-			
+
 			var countriesSettings = {
 				"async": true,
 				"crossDomain": true,
@@ -42,63 +42,80 @@
 				}
 			}
 
-			getDataOnSelectElement(countries, countriesSettings);
+			getDataOnSelectElement(countries, countriesSettings, 'Country');
 			setTimeout(() => {
-				getDataOnSelectElement(languages, languageSettings);
-			},2000);
+				getDataOnSelectElement(languages, languageSettings, 'Language');
+			}, 2000);
+
+			$('#show-password').on("click", function () {
+				if (this.id == 'show-password') {
+					$('#txt-password').attr('type', 'text');
+					$('#show-password-icon').removeClass('fa-eye').addClass('fa-eye-slash');
+					$(this).attr('id', 'hide-password');
+				}
+				else {
+					$('#txt-password').attr('type', 'password');
+					$('#show-password-icon').removeClass('fa-eye-slash').addClass('fa-eye');
+					$(this).attr('id', 'show-password');
+				}
+			});
+			 
 		});
 	</script>
 }
+<link href="~/css/CreateUser.css" rel="stylesheet" type="text/css">
+<script defer src="~/lib/fontawesome-free-5.15.1-web/js/all.js"></script> <!--load all styles -->
 
-<h1>Register</h1>
-
-<h4>User</h4>
-<hr />
-<div class="row">
-	<div class="col-md-4">
+<div class="container-register">
+	<div class="wrap-register p-t-90 p-b-30">
+		
 		<form asp-action="Create">
-			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
-			<div class="form-group">
-				<label asp-for="username" class="control-label"></label>
-				<input asp-for="username" class="form-control" />
-				<span asp-validation-for="username" class="text-danger"></span>
-			</div>
-			<div class="form-group">
-				<label asp-for="password" class="control-label"></label>
-				<input asp-for="password" class="form-control" />
-				<span asp-validation-for="password" class="text-danger"></span>
-			</div>
-			<div class="form-group">
-				<label asp-for="email" class="control-label"></label>
-				<input asp-for="email" class="form-control" />
-				<span asp-validation-for="email" class="text-danger"></span>
-			</div>
-			<div class="form-group">
-				<label asp-for="birthdate" class="control-label"></label>
-				<input asp-for="birthdate" class="form-control" />
-				<span asp-validation-for="birthdate" class="text-danger"></span>
-			</div>
-			<div class="form-group">
-				<label asp-for="sex" class="control-label"></label>
-				<select asp-for="sex" class="form-control">
-					<option>Please select</option>
-					<option value="Male">Male</option>
-					<option value="Female">Female</option>
-				</select>
-				<span asp-validation-for="sex" class="text-danger"></span>
-			</div>
-			<div class="form-group">
-				<label asp-for="country" class="control-label"></label>
-				<select asp-for="country" class="form-control"></select>
-				<span asp-validation-for="country" class="text-danger"></span>
-			</div>
-			<div class="form-group">
-				<label asp-for="language" class="control-label"></label>
-				<select asp-for="language" class="form-control"></select>
-				<span asp-validation-for="language" class="text-danger"></span>
-			</div>
-			<div class="form-group">
-				<input type="submit" value="Create" class="btn btn-primary" />
+			<span class="register-form-title p-b-40">
+				Register
+			</span>
+			<div class="form-inputs-container">
+				<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+				<div class="form-group wrap-input">
+					<input asp-for="username" class="form-control" placeholder="Username" />
+					<span asp-validation-for="username" class="text-danger"></span>
+				</div>
+				
+				<div class="form-group wrap-input">
+					<span id="show-password" class="btn-show-pass">
+						<i id="show-password-icon" class="fas fa-eye"></i>
+					</span>
+					<input asp-for="password" id="txt-password" type="password" class="form-control password" placeholder="Password" />
+					<span asp-validation-for="password" class="text-danger"></span>
+
+				</div>
+				<div class="form-group wrap-input">
+					<input asp-for="email" class="form-control" placeholder="Email" />
+					<span asp-validation-for="email" class="text-danger"></span>
+				</div>
+				<div class="form-group wrap-input">
+					<input asp-for="birthdate" class="form-control" placeholder="Birthdate" />
+					<span asp-validation-for="birthdate" class="text-danger"></span>
+				</div>
+				<div class="form-group wrap-input">
+					<select asp-for="sex" class="form-control">
+						<option value="">Please select Gender</option>
+						<option value="Male">Male</option>
+						<option value="Female">Female</option>
+					</select>
+					<span asp-validation-for="sex" class="text-danger"></span>
+				</div>
+				<div class="form-group wrap-input">
+					<select asp-for="country" class="form-control"></select>
+					<span asp-validation-for="country" class="text-danger"></span>
+				</div>
+				<div class="form-group wrap-input">
+					<select asp-for="language" class="form-control"></select>
+					<span asp-validation-for="language" class="text-danger"></span>
+				</div>
+				<div class="container-register-form-btn">
+					<input class="Register-form-btn" type="submit" value="Register" />
+				</div>
+
 			</div>
 		</form>
 	</div>

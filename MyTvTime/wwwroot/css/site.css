@@ -59,9 +59,16 @@ html {
 }
 
 body {
-  /* Margin bottom by footer height */
-  margin-bottom: 60px;
+    /* Margin bottom by footer height */
+    margin-bottom: 60px;
+    font-family: chalk;
 }
+
+@font-face {
+    font-family: chalk;
+    src: url('../fonts/Roboto-Regular.ttf');
+}
+
 .footer {
   position: absolute;
   bottom: 0;
@@ -90,6 +97,13 @@ body {
     justify-content: space-around;
 }
 
+.column-container {
+    column-count: 3;
+    column-rule: 1px solid #5d5350;
+    text-align: center;
+    font-size: 2em;
+    padding: 3em;
+}
 
 .link {
     color: #cc0009;
@@ -98,6 +112,7 @@ body {
     font-weight: 700;
     line-height: 1.5;
     transition: color 0.5s;
+    font-family: chalk;
 }
 
 .link:hover {
