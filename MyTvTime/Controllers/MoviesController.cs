@@ -176,6 +176,11 @@ namespace MyTvTime.Controllers
 
         public async Task<IActionResult> AddMovieAsync(string IMDBID)
         {
+            var checkMovie = from m in db.Movie where m.IMDBID == IMDBID select m;
+            if (checkMovie.Any())
+            {
+                return RedirectToAction("Details", new { id = checkMovie.First().ID });
+             }
             var client = new RestClient("https://movie-database-imdb-alternative.p.rapidapi.com/?i=" + IMDBID +" &r=json&type=movie&plot=short");
             var request = new RestRequest(Method.GET);
             request.AddHeader("x-rapidapi-key", "93f2bbe6bdmsh4a12d4d9e5b771dp14b702jsn8bc0f393b0ca");
