@@ -85,16 +85,6 @@ namespace MyTvTime
 			app.UseAuthentication();
 			app.UseAuthorization();
 
-            app.UseStatusCodePages(async context =>
-            {
-                var response = context.HttpContext.Response;
-
-                if (response.StatusCode == (int)HttpStatusCode.Unauthorized ||
-                    response.StatusCode == (int)HttpStatusCode.Forbidden)
-                    response.Redirect("/Home/Error");
-            });
-
-
             app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapControllerRoute(

@@ -32,7 +32,7 @@ namespace MyTvTime.Models
                          email = "sapir@gmail.com",
                          sex = "Female",
                          country = "Malta",
-                         birthdate = new DateTime(1996, 11, 27),
+                         birthdate = new DateTime(1997, 2, 23),
                          language = "German",
                          isAdmin = true
                      },
@@ -43,7 +43,7 @@ namespace MyTvTime.Models
                           email = "liav@gmail.com",
                           sex = "Male",
                           country = "Ethiopia",
-                          birthdate = new DateTime(1996, 11, 27),
+                          birthdate = new DateTime(1998, 1, 12),
                           language = "Spanish",
                           isAdmin = true
                       },
@@ -54,7 +54,7 @@ namespace MyTvTime.Models
                           email = "user@gmail.com",
                           sex = "Male",
                           country = "Ghana",
-                          birthdate = new DateTime(1996, 11, 27),
+                          birthdate = new DateTime(1999, 11, 27),
                           language = "French",
                           isAdmin = false
                       });

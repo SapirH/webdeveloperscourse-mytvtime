@@ -97,7 +97,7 @@ namespace MyTvTime.Controllers
                     await _SignInAsync(users.First());
                     return RedirectToAction(nameof(HomeController.Index), "Home");
                 }
-                return NotFound();
+                return RedirectToAction(nameof(AuthController.AccessDenied), "Auth");
             }
             return View();
         }
